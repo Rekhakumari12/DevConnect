@@ -1,4 +1,5 @@
-public class Student extends Person {
+
+public class Student extends Person{
   int studentId;
 
   public Student(String name, int age, int studentId) {
