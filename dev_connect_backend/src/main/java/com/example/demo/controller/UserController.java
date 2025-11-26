@@ -31,9 +31,10 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User register(@Valid @RequestBody User user) {
+    public ResponseEntity<UserProfile> register(@Valid @RequestBody User user) {
             user.password = passwordEncoder.encode(user.password);
-            return userRepo.save(user);
+            userRepo.save(user);
+            return ResponseEntity.ok().body(new UserProfile(user));
     }
 
     @GetMapping("/me")

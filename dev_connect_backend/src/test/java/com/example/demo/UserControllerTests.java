@@ -18,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,7 @@ class UserControllerTests {
     @BeforeEach
     void setup() {
         sample = new User();
-        sample.id = 1L;
+        sample.id = UUID.randomUUID();
         sample.username = "rekha";
         sample.password = "rawpass";
         sample.email = "rekha@example.com";

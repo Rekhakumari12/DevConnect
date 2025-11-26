@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.UUID;
+
 // Represents a row in your users table
 @Entity
 
@@ -11,7 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    public Long id;
+    public UUID id;
 
     @NotBlank
     public String password;
