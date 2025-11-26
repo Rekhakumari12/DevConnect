@@ -17,6 +17,7 @@ public class SecurityConfig {
 
     @Bean // A bean in Spring is just an object managed by the framework
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth

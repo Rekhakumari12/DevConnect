@@ -25,20 +25,15 @@ public class JwtFilter extends OncePerRequestFilter {
     private UserRepository userRepo;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
-System.out.println("doFilterInternal");
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         // Skip login endpoint
         if (request.getServletPath().startsWith("/auth/login")) {
-            System.out.println(" /auth/login");
             filterChain.doFilter(request, response);
             return;
         }
 
-// For future login
-
+        // For future login
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -46,18 +41,20 @@ System.out.println("doFilterInternal");
             String token = authHeader.substring(7);
             String username = jwtUtil.extractUsername(token);
 
-            if (username != null && jwtUtil.IsTokenValid(token, username)) {
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null && jwtUtil.IsTokenValid(token, username)) {
 
-                // Load your user (optional, simple way)
                 User user = userRepo.findByUsername(username).orElse(null);
 
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                user, null, Collections.emptyList()
-                        );
-
-                // Let Spring know the user is authenticated
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                if(user != null) {
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    username,
+                                    null,
+                                    Collections.emptyList()
+                            );
+                    // Let Spring know the user is authenticated
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
         }
 
