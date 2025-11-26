@@ -47,8 +47,8 @@ public class AuthControllerTests {
             LoginRequest req = makeReq("alice", "secret");
 
             User mockUser = new User();
-            mockUser.username = "alice";
-            mockUser.password = "hashed";
+            mockUser.setUsername("alice");
+            mockUser.setPassword("hashed");
 
             Mockito.when(userRepo.findByUsername("alice"))
                     .thenReturn(Optional.of(mockUser));
@@ -85,8 +85,8 @@ public class AuthControllerTests {
             LoginRequest req = makeReq("alice", "wrongpass");
 
             User mockUser = new User();
-            mockUser.username = "alice";
-            mockUser.password = "hashed";
+            mockUser.setUsername("alice");
+            mockUser.setPassword("hashed");
 
             Mockito.when(userRepo.findByUsername("alice"))
                     .thenReturn(Optional.of(mockUser));

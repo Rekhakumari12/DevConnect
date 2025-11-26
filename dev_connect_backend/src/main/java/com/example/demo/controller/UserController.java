@@ -7,13 +7,11 @@ import com.example.demo.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -32,7 +30,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<UserProfile> register(@Valid @RequestBody User user) {
-            user.password = passwordEncoder.encode(user.password);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
             return ResponseEntity.ok().body(new UserProfile(user));
     }
@@ -49,10 +47,10 @@ public class UserController {
         String username = principal.getName();
         User user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (req.email != null) user.email = req.email;
-        if (req.username != null) user.username = req.username;
-        if (req.skills != null) user.skills = req.skills;
-        if (req.bio != null) user.bio = req.bio;
+        if (req.email != null) user.setEmail(req.email);
+        if (req.username != null) user.setUsername(req.username);
+        if (req.skills != null) user.setSkills(req.skills);
+        if (req.bio != null) user.setBio(req.bio);
 
         userRepo.save(user);
 

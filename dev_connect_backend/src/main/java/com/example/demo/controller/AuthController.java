@@ -30,7 +30,7 @@ public class AuthController {
                 .findByUsername(loginRequest.username)
                 .orElseThrow(() -> new RuntimeException(("User not found")));
 
-        if(!passEncoder.matches(loginRequest.password, user.password)) {
+        if(!passEncoder.matches(loginRequest.password, user.getPassword())) {
             throw new RuntimeException(("Wrong password"));
         }
 
