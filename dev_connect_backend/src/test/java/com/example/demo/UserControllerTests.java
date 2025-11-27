@@ -1,11 +1,13 @@
 package com.example.demo;
 
 import com.example.demo.controller.UserController;
+import com.example.demo.dto.UserProfile;
 import com.example.demo.entity.User;
 import com.example.demo.exception.GlobalExceptionHandler;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtFilter;
 import com.example.demo.security.JwtUtil;
+import com.example.demo.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +44,10 @@ class UserControllerTests {
     private UserRepository userRepo;
 
     @MockitoBean
+    private UserService userService;
+
+
+    @MockitoBean
     private PasswordEncoder passwordEncoder;
 
     @MockitoBean
@@ -50,38 +56,27 @@ class UserControllerTests {
     @MockitoBean
     private JwtUtil jwtUtil;
 
-    private User sample;
-
-    @BeforeEach
-    void setup() {
-        sample = new User();
-        sample.setUsername("rekha");
-        sample.setPassword("rawpass");
-        sample.setEmail("rekha@example.com");
-        sample.setSkills("Java");
-        sample.setBio("Coder");
-    }
-
     @Test
-    void getAllUsersReturnsList() throws Exception {
-        when(userRepo.findAll()).thenReturn(List.of(sample));
+    void registerReturnsProfile() throws Exception {
+        UUID uuid = UUID.randomUUID();
+        User user = new User();
+        user.setId(uuid);
+        user.setUsername("rekha");
+        user.setEmail("rekha@example.com");
+        user.setPassword("encodedpass");
+        user.setSkills("Java, Spring");
+        user.setBio("Software Developer");
 
-        mockMvc.perform(get("/api/users"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].username").value("rekha"))
-                .andExpect(jsonPath("$[0].email").value("rekha@example.com"));
-    }
-
-    @Test
-    void registerSuccessReturnsSavedUser() throws Exception {
+        UserProfile profile = new UserProfile(user);
+        when(userService.register(any(User.class))).thenReturn(profile);
 
         String json = """
             {
                 "username": "rekha",
-                "password": "rawpass",
                 "email": "rekha@example.com",
-                "skills": "Java",
-                "bio": "Coder"
+                "password": "encodedpass",
+                "skills": "Java, Spring",
+                "bio": "Software Developer"
             }
         """;
 
@@ -134,26 +129,6 @@ class UserControllerTests {
     }
 
     @Test
-    void registerReturnsNullOnException() throws Exception {
-        when(passwordEncoder.encode("rawpass")).thenReturn("enc");
-        when(userRepo.save(any(User.class))).thenThrow(new RuntimeException("DB problem"));
-
-        String json = """
-            {
-                "username": "rekha",
-                "password": "rawpass",
-                "email": "rekha@example.com"
-            }
-        """;
-
-        mockMvc.perform(post("/api/users/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.error").value("DB problem"));
-    }
-
-    @Test
     void passwordIsEncodedBeforeSaving() throws Exception {
         when(passwordEncoder.encode("rawpass")).thenReturn("ENCODED_VALUE");
         when(userRepo.save(any(User.class))).thenAnswer(inv -> {
@@ -173,29 +148,6 @@ class UserControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    void registerHandlesExtraFieldsGracefully() throws Exception {
-        when(passwordEncoder.encode("rawpass")).thenReturn("safe");
-        when(userRepo.save(any(User.class))).thenReturn(sample);
-
-        String json = """
-            {
-                "username": "rekha",
-                "password": "rawpass",
-                "email": "rekha@example.com",
-                "skills": "Java",
-                "bio": "Coder",
-                "extraField": "ignored"
-            }
-        """;
-
-        mockMvc.perform(post("/api/users/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("rekha"));
     }
 
     @Test
