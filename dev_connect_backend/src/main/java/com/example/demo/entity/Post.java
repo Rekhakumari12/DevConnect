@@ -3,7 +3,6 @@ package com.example.demo.entity;
 import com.example.demo.enums.PostVisibility;
 import jakarta.persistence.*;
 
-import java.beans.Visibility;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +24,7 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @PrePersist
