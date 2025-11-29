@@ -21,15 +21,16 @@ public class PostController {
 
 
     @GetMapping("/{username}")
-    public ResponseEntity<List<PostResponse>> getMyPosts(@PathVariable String username) {
-        List<PostResponse> posts = postService.getMyPosts(username);
+    public ResponseEntity<List<PostResponse>> getPostsByUsername(@PathVariable String username) {
+        List<PostResponse> posts = postService.getPostsByUsername(username);
         return ResponseEntity.ok(posts);
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest post, Principal principal) {
         String username = principal.getName();
-        PostResponse postResponse  = postService.createPost(post, username);
+        PostResponse postResponse = postService.createPost(post, username);
         return ResponseEntity.ok(postResponse);
     }
 

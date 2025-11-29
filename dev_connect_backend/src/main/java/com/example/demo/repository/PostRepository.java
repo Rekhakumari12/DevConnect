@@ -1,7 +1,6 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.Post;
-import com.example.demo.entity.User;
 import com.example.demo.enums.PostVisibility;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -22,7 +22,7 @@ public class PostService {
     private UserRepository userRepo;
 
     @Autowired
-    private PostRepository postRepo;
+    private PostRepository projectIdeaRepo;
 
     @Autowired
     private AuthUtil authUtil;
@@ -52,18 +52,22 @@ public class PostService {
         post.setTechStack(postRequest.techStack);
         post.setVisibility(postRequest.visibility);
 
-        Post saved = postRepo.save(post);
+        Post saved = projectIdeaRepo.save(post);
         return toResponse(saved);
     }
 
     public List<PostResponse> getPublicPosts() {
-        List<Post> posts = postRepo.findByVisibility(PostVisibility.PUBLIC);
+        List<Post> posts = projectIdeaRepo.findByVisibility(PostVisibility.PUBLIC);
         return posts.stream().map(this::toResponse).toList();
     }
 
-    public List<PostResponse> getMyPosts(String username) {
-        authUtil.verifyUserAccess(username);
-        List<Post> posts = postRepo.findAllByUser_Username(username);
+
+    public List<PostResponse> getPostsByUsername(String username) {
+        boolean sameUser = authUtil.isSameUser(username);
+        List<Post> posts = projectIdeaRepo.findAllByUser_Username(username);
+        if (!sameUser) {
+            return posts.stream().filter(post -> post.getVisibility() == PostVisibility.PUBLIC).map(this::toResponse).toList();
+        }
         return posts.stream().map(this::toResponse).toList();
     }
 
@@ -76,19 +80,19 @@ public class PostService {
         if(req.techStack!=null) post.setTechStack(req.techStack);
         if(req.visibility!=null) post.setVisibility(req.visibility);
 
-        return postRepo.save(post);
+        return projectIdeaRepo.save(post);
     }
 
     public void deletePost(UUID postId, String username) {
 
         Post post = getOwnedPost(username, postId);
-        postRepo.delete(post);
+        projectIdeaRepo.delete(post);
     }
 
     // private helper method
     private Post getOwnedPost(String username, UUID postId) {
         authUtil.verifyUserAccess(username);
-        return postRepo.findByIdAndUser_Username(postId, username)
+        return projectIdeaRepo.findByIdAndUser_Username(postId, username)
                 .orElseThrow(() -> new AccessDeniedException("Post not found or not owned by you!"));
     }
 

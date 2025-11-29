@@ -8,11 +8,14 @@ import java.security.Principal;
 
 @Component
 public class AuthUtil {
-    public void verifyUserAccess(String requestedUsername) {
+    public boolean isSameUser(String requestedUsername) {
         Principal principal = SecurityContextHolder.getContext().getAuthentication();
         String tokenUsername = principal.getName();
+        return tokenUsername.equals(requestedUsername);
+    }
 
-        if(!tokenUsername.equals(requestedUsername)) {
+    public void verifyUserAccess(String requestedUsername) {
+        if (!isSameUser(requestedUsername)) {
             throw new AccessDeniedException("Post not found or not owned by you");
         }
     }
