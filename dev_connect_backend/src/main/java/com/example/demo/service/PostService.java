@@ -42,7 +42,6 @@ public class PostService {
 
     public PostResponse createPost(PostRequest postRequest, String username) {
         authUtil.verifyUserAccess(username);
-
         User user = userRepo.findByUsername(username)
                 .orElseThrow(()-> new RuntimeException("User not found!"));
         Post post = new Post();
@@ -71,7 +70,7 @@ public class PostService {
         return posts.stream().map(this::toResponse).toList();
     }
 
-    public Post updatePost(PostRequest req, String username, UUID postId) {
+    public PostResponse updatePost(PostRequest req, String username, UUID postId) {
 
         Post post = getOwnedPost(username, postId);
 
@@ -80,7 +79,10 @@ public class PostService {
         if(req.techStack!=null) post.setTechStack(req.techStack);
         if(req.visibility!=null) post.setVisibility(req.visibility);
 
-        return projectIdeaRepo.save(post);
+        Post updatedPost = projectIdeaRepo.save(post);
+
+        return toResponse(updatedPost);
+
     }
 
     public void deletePost(UUID postId, String username) {

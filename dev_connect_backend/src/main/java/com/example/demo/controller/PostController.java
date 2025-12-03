@@ -35,9 +35,9 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@RequestBody PostRequest req, @PathVariable UUID postId, Principal principal) {
+    public ResponseEntity<PostResponse> updatePost(@RequestBody PostRequest req, @PathVariable UUID postId, Principal principal) {
         String username = principal.getName();
-        Post post = postService.updatePost(req, username, postId);
+        PostResponse post = postService.updatePost(req, username, postId);
         return ResponseEntity.ok(post);
     }
 
