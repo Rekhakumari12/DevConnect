@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -24,11 +25,14 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // Skip login endpoint
-        if (request.getServletPath().startsWith("/auth/login")) {
+        if (request.getServletPath().length() > 0) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -54,6 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
                             );
                     // Let Spring know the user is authenticated
                     SecurityContextHolder.getContext().setAuthentication(auth);
+
                 }
             }
         }

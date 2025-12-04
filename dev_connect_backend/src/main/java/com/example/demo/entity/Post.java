@@ -15,6 +15,8 @@ public class Post {
 
     private String title;
     private String content;
+
+    @ElementCollection
     private List<String> techStack;
 
     @Enumerated(EnumType.STRING)

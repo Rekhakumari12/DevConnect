@@ -16,7 +16,7 @@ public class AuthUtil {
 
     public void verifyUserAccess(String requestedUsername) {
         if (!isSameUser(requestedUsername)) {
-            throw new AccessDeniedException("Post not found or not owned by you");
+            throw new AccessDeniedException("You are not allowed to do this action!");
         }
     }
 }

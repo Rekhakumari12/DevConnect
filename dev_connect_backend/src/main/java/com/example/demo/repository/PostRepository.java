@@ -12,4 +12,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Post> findByVisibility(PostVisibility visibility);
     Optional<Post> findByIdAndUser_Username(UUID postId, String username);
     List<Post> findAllByUser_Username(String username);
+    Optional<Post> findById(UUID id);
 }

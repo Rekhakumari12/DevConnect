@@ -41,7 +41,6 @@ public class PostService {
     }
 
     public PostResponse createPost(PostRequest postRequest, String username) {
-        authUtil.verifyUserAccess(username);
         User user = userRepo.findByUsername(username)
                 .orElseThrow(()-> new RuntimeException("User not found!"));
         Post post = new Post();
@@ -60,7 +59,6 @@ public class PostService {
         return posts.stream().map(this::toResponse).toList();
     }
 
-
     public List<PostResponse> getPostsByUsername(String username) {
         boolean sameUser = authUtil.isSameUser(username);
         List<Post> posts = projectIdeaRepo.findAllByUser_Username(username);
@@ -71,7 +69,6 @@ public class PostService {
     }
 
     public PostResponse updatePost(PostRequest req, String username, UUID postId) {
-
         Post post = getOwnedPost(username, postId);
 
         if(req.title!=null) post.setTitle(req.title);
@@ -86,14 +83,12 @@ public class PostService {
     }
 
     public void deletePost(UUID postId, String username) {
-
         Post post = getOwnedPost(username, postId);
         projectIdeaRepo.delete(post);
     }
 
     // private helper method
     private Post getOwnedPost(String username, UUID postId) {
-        authUtil.verifyUserAccess(username);
         return projectIdeaRepo.findByIdAndUser_Username(postId, username)
                 .orElseThrow(() -> new AccessDeniedException("Post not found or not owned by you!"));
     }
