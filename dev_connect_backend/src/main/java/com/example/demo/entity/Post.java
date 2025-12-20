@@ -17,7 +17,7 @@ public class Post {
     private String content;
 
     @ElementCollection
-    private List<String> techStack;
+    private List<String> tags;
 
     @Enumerated(EnumType.STRING)
     private PostVisibility visibility;
@@ -25,9 +25,12 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reaction> reactions;
 
     @PrePersist
     public void prePersist() {
@@ -65,11 +68,11 @@ public class Post {
     }
 
     public List<String> getTechStack() {
-        return techStack;
+        return tags;
     }
 
-    public void setTechStack(List<String> techStack) {
-        this.techStack = techStack;
+    public void setTechStack(List<String> tags) {
+        this.tags = tags;
     }
 
     public PostVisibility getVisibility() {
@@ -102,5 +105,13 @@ public class Post {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Reaction> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(List<Reaction> reactions) {
+        this.reactions = reactions;
     }
 }

@@ -9,6 +9,6 @@ public class PostRequest {
     @NotBlank
     public String title;
     public String content;
-    public List<String> techStack;
+    public List<String> tags;
     @NotBlank public PostVisibility visibility = PostVisibility.PUBLIC;
 }

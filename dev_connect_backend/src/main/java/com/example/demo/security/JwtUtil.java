@@ -1,46 +1,84 @@
 package com.example.demo.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    private final SecretKey secret = Keys.hmacShaKeyFor("my_super_secret_key_which_is_long_enough_12345".getBytes(StandardCharsets.UTF_8));
+
+    private String secret = "";
+    public JwtUtil(){
+        try{
+            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+            SecretKey sk = keyGen.generateKey();
+            secret = Base64.getEncoder().encodeToString(sk.getEncoded());
+        }catch (NoSuchAlgorithmException ex){
+            throw new RuntimeException(ex);
+        }
+    }
 
     public String generateToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000 ))
-                .signWith(secret, SignatureAlgorithm.HS256)
+                .claims()
+                .add(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000 ))
+                .and()
+                .signWith(getKey())
                 .compact();
     }
 
+    private SecretKey getKey() {
+        byte[] keyByte = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyByte);
+
+    }
+
     public String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secret)
+        // extract the username from jwt token
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimResolver.apply(claims);
+    }
+
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey())
                 .build()
-                .parseClaimsJws(token).getBody().getSubject();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean isExpired(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secret)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration()
-                .before(new Date());
+        return extractExpiration(token).before(new Date());
     }
 
-    public boolean IsTokenValid(String token, String username) {
-        return extractUsername(token)
-                .equals(username) && !isExpired(token);
+    public boolean IsTokenValid(String token, UserDetails userDetails) {
+        String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && !isExpired(token);
+    }
+
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 }

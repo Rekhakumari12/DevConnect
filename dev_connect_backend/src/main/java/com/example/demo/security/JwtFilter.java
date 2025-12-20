@@ -2,14 +2,17 @@ package com.example.demo.security;
 
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.CustomUserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,40 +29,36 @@ public class JwtFilter extends OncePerRequestFilter {
     private UserRepository userRepo;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    ApplicationContext context;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        String authHeader = request.getHeader("Authorization");
+        String token = null;
+        String usernameFromToken = null;
+
         // Skip login endpoint
-        if (request.getServletPath().length() > 0) {
+        if (request.getServletPath().startsWith("/auth/login")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // For future login
-        String authHeader = request.getHeader("Authorization");
-
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+             token = authHeader.substring(7);
+            usernameFromToken = jwtUtil.extractUsername(token);
+        }
 
-            String token = authHeader.substring(7);
-            String username = jwtUtil.extractUsername(token);
+        if (usernameFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // userDetails from database
+            UserDetails userDetails =
+                    context.getBean(CustomUserService.class).loadUserByUsername(usernameFromToken);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null && jwtUtil.IsTokenValid(token, username)) {
-
-                User user = userRepo.findByUsername(username).orElse(null);
-
-                if(user != null) {
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(
-                                    username,
-                                    null,
-                                    Collections.emptyList()
-                            );
-                    // Let Spring know the user is authenticated
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-
-                }
+            if(jwtUtil.IsTokenValid(token, userDetails)) { // username from request
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, Collections.emptyList());
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
 
