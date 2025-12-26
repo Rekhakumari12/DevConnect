@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import com.example.demo.enums.PostVisibility;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ public class Post {
     private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Reaction> reactions;
 
     @PrePersist
@@ -67,11 +69,11 @@ public class Post {
         this.content = content;
     }
 
-    public List<String> getTechStack() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTechStack(List<String> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 

@@ -2,6 +2,7 @@ package com.example.demo.security;
 
 import com.example.demo.model.UserPrincipal;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -31,5 +32,11 @@ public class AuthUtil {
 
         UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
         return userDetails.getId();
+    }
+
+    public static boolean isAuthenticated() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null
+                && auth.isAuthenticated();
     }
 }

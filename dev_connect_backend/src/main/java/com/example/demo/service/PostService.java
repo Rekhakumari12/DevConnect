@@ -10,11 +10,13 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.security.AuthUtil;
 import com.example.demo.utils.ReactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -24,7 +26,7 @@ public class PostService {
     private UserRepository userRepo;
 
     @Autowired
-    private PostRepository projectIdeaRepo;
+    private PostRepository postRepo;
 
     @Autowired
     private AuthUtil authUtil;
@@ -40,13 +42,16 @@ public class PostService {
         res.setId(post.getId());
         res.setTitle(post.getTitle());
         res.setContent(post.getContent());
-        res.setTags(post.getTechStack());
+        res.setTags(post.getTags());
         res.setVisibility(post.getVisibility().name());
         res.setUsername(post.getUser().getUsername());
         res.setCreatedAt(post.getCreatedAt());
         res.setUpdatedAt(post.getUpdatedAt());
+        res.setReactions(reactionMapper.toReactionMap(post.getReactions()));
+        res.setComments(commentService.getCommentByPostId(post.getId()));
         return res;
     }
+
 
     public PostResponse createPost(PostRequest postRequest, String username) {
         User user = userRepo.findByUsername(username)
@@ -55,14 +60,14 @@ public class PostService {
         post.setUser(user);
         post.setTitle(postRequest.title);
         post.setContent(postRequest.content);
-        post.setTechStack(postRequest.tags);
+        post.setTags(postRequest.tags);
         post.setVisibility(postRequest.visibility);
-        Post saved = projectIdeaRepo.save(post);
+        Post saved = postRepo.save(post);
         return toResponse(saved);
     }
 
     public List<PostResponse> getPublicPosts() {
-        List<Post> posts = projectIdeaRepo.findByVisibility(PostVisibility.PUBLIC);
+        List<Post> posts = postRepo.findByVisibility(PostVisibility.PUBLIC);
         return posts.stream().map(post -> {
             PostResponse p = toResponse(post);
             p.setComments(commentService.getCommentByPostId(post.getId()));
@@ -73,7 +78,7 @@ public class PostService {
 
     public List<PostResponse> getPostsByUsername(String username) {
         boolean sameUser = authUtil.isSameUser(username);
-        List<Post> posts = projectIdeaRepo.findAllByUser_Username(username);
+        List<Post> posts = postRepo.findAllByUser_Username(username);
         if (!sameUser) {
             return posts.stream().filter(post -> post.getVisibility() == PostVisibility.PUBLIC).map(this::toResponse).toList();
         }
@@ -84,20 +89,30 @@ public class PostService {
         Post post = getOwnedPost(username, postId);
         if(req.title!=null) post.setTitle(req.title);
         if(req.content!=null) post.setContent(req.content);
-        if(req.tags!=null) post.setTechStack(req.tags);
+        if(req.tags!=null) post.setTags(req.tags);
         if(req.visibility!=null) post.setVisibility(req.visibility);
-        Post updatedPost = projectIdeaRepo.save(post);
+        Post updatedPost = postRepo.save(post);
         return toResponse(updatedPost);
     }
 
     public void deletePost(UUID postId, String username) {
         Post post = getOwnedPost(username, postId);
-        projectIdeaRepo.delete(post);
+        postRepo.delete(post);
     }
 
     private Post getOwnedPost(String username, UUID postId) {
-        return projectIdeaRepo.findByIdAndUser_Username(postId, username)
+        return postRepo.findByIdAndUser_Username(postId, username)
                 .orElseThrow(() -> new AccessDeniedException("Post not found or not owned by you!"));
+    }
+
+    public Page<PostResponse> searchPosts(String keyword, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(
+                page == null ? 0 : page,
+                size == null ? 10 : size
+        );
+
+        Page<Post> posts = postRepo.searchPublicPosts(keyword, pageable);
+        return  posts.map(this::toResponse);
     }
 
 }

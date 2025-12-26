@@ -1,10 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.CommentResponse;
-import com.example.demo.dto.ReactionRequest;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Post;
-import com.example.demo.entity.Reaction;
 import com.example.demo.entity.User;
 import com.example.demo.enums.PostVisibility;
 import com.example.demo.repository.CommentRepository;
@@ -65,7 +63,6 @@ public class CommentService {
         c.setUser(user);
 
         Comment saved = commentRepo.save(c);
-        System.out.println(saved);
         return toResponse(saved);
      }
 
@@ -88,6 +85,5 @@ public class CommentService {
             commentResponse.setReactions(reactionMapper.toReactionMap(comment.getReactions()));
             return commentResponse;
         }).toList();
-
      }
 }
