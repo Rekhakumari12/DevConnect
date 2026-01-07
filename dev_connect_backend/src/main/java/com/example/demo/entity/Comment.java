@@ -28,10 +28,6 @@ public class Comment {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-//    So mappedBy = "comment" is basically saying:
-//    “I am the inverse side of the relationship.
-//    The real work (foreign key, joins, updates) is handled by Reaction.comment.”
-
     @OneToMany(mappedBy = "comment", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Reaction> reactions;
 

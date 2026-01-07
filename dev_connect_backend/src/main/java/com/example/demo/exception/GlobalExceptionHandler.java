@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.security.access.AccessDeniedException;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,15 +20,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleDataIntegrity(DataIntegrityViolationException ex) {
 
         Map<String, String> response = new HashMap<>();
+
+        response.put("timestamp", Instant.now().toString());
+        response.put("status", HttpStatus.BAD_REQUEST.toString());
+        response.put("error", "Validation Error");
+
         String msg = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
 
         if (msg.contains("username")) {
-            response.put("error", "Username already exists");
+            response.put("message", "Username already exists");
         }
         else if (msg.contains("email")) {
-            response.put("error", "Email already exists");
+            response.put("message", "Email already exists");
         } else {
-            response.put("error", "Data integrity error");
+            response.put("message", "Data integrity error");
         }
 
         return ResponseEntity.badRequest().body(response);

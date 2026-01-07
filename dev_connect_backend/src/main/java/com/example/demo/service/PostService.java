@@ -60,7 +60,7 @@ public class PostService {
         post.setUser(user);
         post.setTitle(postRequest.title);
         post.setContent(postRequest.content);
-        post.setTags(postRequest.tags);
+        post.setTags(postRequest.techStack);
         post.setVisibility(postRequest.visibility);
         Post saved = postRepo.save(post);
         return toResponse(saved);
@@ -89,7 +89,7 @@ public class PostService {
         Post post = getOwnedPost(username, postId);
         if(req.title!=null) post.setTitle(req.title);
         if(req.content!=null) post.setContent(req.content);
-        if(req.tags!=null) post.setTags(req.tags);
+        if(req.techStack!=null) post.setTags(req.techStack);
         if(req.visibility!=null) post.setVisibility(req.visibility);
         Post updatedPost = postRepo.save(post);
         return toResponse(updatedPost);
