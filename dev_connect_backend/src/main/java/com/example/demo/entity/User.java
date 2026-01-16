@@ -2,33 +2,23 @@ package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.UUID;
 
-// Represents a row in your users table
 @Entity
-
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @NotBlank
-    @JsonIgnore
     private String password;
-
     private String skills;
     private String bio;
-
-    @NotBlank
     @Column(unique = true)
     private String username;
-
-    @NotBlank
-    @Email
     @Column(unique = true)
     private String email;
 

@@ -12,19 +12,18 @@ import java.util.UUID;
 
 @Component
 public class AuthUtil {
-    public boolean isSameUser(String requestedUsername) {
-        Principal principal = SecurityContextHolder.getContext().getAuthentication();
-        String tokenUsername = principal.getName();
-        return tokenUsername.equals(requestedUsername);
+    public boolean isSameUser(UUID userId) {
+        UUID currentUserId = getCurrentUserId();
+        return currentUserId.equals(userId);
     }
 
-    public void verifyUserAccess(String requestedUsername) {
-        if (!isSameUser(requestedUsername)) {
+    public void verifyUserAccess(UUID userId) {
+        if (!isSameUser(userId)) {
             throw new AccessDeniedException("You are not allowed to do this action!");
         }
     }
 
-    public static UUID getCurrentUserId() {
+    private static UUID getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth == null || !auth.isAuthenticated()) {
             throw new RuntimeException("Unauthenticated user");

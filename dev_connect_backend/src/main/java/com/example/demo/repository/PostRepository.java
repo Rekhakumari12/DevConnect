@@ -36,7 +36,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> searchPublicPosts(String keyword, Pageable pageable);
 
     List<Post> findByVisibility(PostVisibility visibility);
-    Optional<Post> findByIdAndUser_Username(UUID postId, String username);
-    List<Post> findAllByUser_Username(String username);
+    Optional<Post> findByIdAndUser_Id(UUID postId, UUID userId);
+    List<Post> findAllByUser_Id(UUID userId);
     Optional<Post> findById(UUID id);
 }

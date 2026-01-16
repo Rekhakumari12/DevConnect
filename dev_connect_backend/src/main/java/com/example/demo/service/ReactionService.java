@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ReactionResponse;
+import com.example.demo.dto.ReactionResponseList;
+import com.example.demo.dto.ReactionSummary;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Post;
 import com.example.demo.entity.Reaction;
@@ -38,67 +40,72 @@ public class ReactionService {
     @Autowired
     private UserRepository userRepo;
 
-
-    private ReactionResponse buildReactionResponse(List<Reaction> reactions) {
-        Map<String, Integer> reactionMap = reactionMapper.toReactionMap(reactions);
-        ReactionResponse response = new ReactionResponse();
-        response.setReactions(reactionMap);
-        return response;
+    private ReactionResponseList buildReactionResponse(List<Reaction> reactions) {
+        List<ReactionSummary> reactionMap = reactionMapper.toReactionMap(reactions);
+        return new ReactionResponseList(reactionMap);
     }
 
-    private ReactionResponse react(ReactionType type, Post post, Comment comment) {
-        UUID userId = AuthUtil.getCurrentUserId();
-        Optional<Reaction> existing;
+    private ReactionResponse react(ReactionType type, Post post, Comment comment, UUID userId) {
+        Reaction finalReaction = null;
+        User user = userRepo.findById(userId);
 
-        if(post!=null) {
-            existing = reactionRepo.findByUserIdAndPostId(userId, post.getId());
-        }else{
-            existing = reactionRepo.findByUserIdAndCommentId(userId, comment.getId());
-        }
+        Optional<Reaction> existing =
+                (post != null)
+                        ? reactionRepo.findByUserIdAndPostId(userId, post.getId())
+                        : reactionRepo.findByUserIdAndCommentId(userId, comment.getId());
 
         if(existing.isPresent()) {
-            Reaction existingReaction = existing.get();
+            Reaction r = existing.get();
 
-            if(existingReaction.getType() == type) {
-                reactionRepo.delete(existingReaction);
+            if(r.getType() == type) {
+                reactionRepo.delete(r);
             } else {
-                existingReaction.setType(type);
-                reactionRepo.save(existingReaction);
+                r.setType(type);
+                finalReaction = reactionRepo.save(r);
             }
         } else {
-            User user = userRepo.findById(userId);
             Reaction r = new Reaction();
             r.setType(type);
             r.setPost(post);
             r.setComment(comment);
             r.setUser(user);
-            reactionRepo.save(r);
+            finalReaction = reactionRepo.save(r);
         }
 
-        List<Reaction> reactions = (post!=null)
-                ? reactionRepo.findAllByPostId(post.getId())
-                : reactionRepo.findAllByCommentId(comment.getId());
+        if (finalReaction == null) {
+            return new ReactionResponse(
+                    null,
+                    userId,
+                    post != null ? post.getId() : null,
+                    comment != null ? comment.getId() : null
+            );
+        }
 
-        return buildReactionResponse(reactions);
+        return new ReactionResponse(
+                finalReaction.getType(),
+                userId,
+                post != null ? post.getId() : null,
+                comment != null ? comment.getId() : null
+        );
     }
 
-    public ReactionResponse getPostReactions(UUID postId) {
+    public ReactionResponseList getReactionsByPostId(UUID postId) {
         postRepo.findById(postId).orElseThrow();
         List<Reaction> reactions = reactionRepo.findAllByPostId(postId);
         return buildReactionResponse(reactions);
     }
 
-    public ReactionResponse getCommentReactions(UUID commentId) {
+    public ReactionResponseList getReactionsByCommentId(UUID commentId) {
         commentRepo.findById(commentId).orElseThrow();
         List<Reaction> reactions = reactionRepo.findAllByPostId(commentId);
         return buildReactionResponse(reactions);
     }
-    public ReactionResponse reactToPost(UUID postId, ReactionType type) {
+    public ReactionResponse reactToPost(UUID postId, ReactionType type, UUID userId) {
         Post post = postRepo.findById(postId).orElseThrow();
-        return react(type, post, null);
+        return react(type, post, null, userId);
     }
-    public ReactionResponse reactToComment(UUID commentId, ReactionType type){
+    public ReactionResponse reactToComment(UUID commentId, ReactionType type, UUID userId){
         Comment comment = commentRepo.findById(commentId).orElseThrow();
-        return react(type, null, comment);
+        return react(type, null, comment, userId);
     }
 }

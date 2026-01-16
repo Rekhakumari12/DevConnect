@@ -1,6 +1,7 @@
 package com.example.demo.security;
 
 import com.example.demo.entity.User;
+import com.example.demo.model.UserPrincipal;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.CustomUserService;
 import jakarta.servlet.FilterChain;
@@ -39,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String usernameFromToken = null;
 
         // Skip login endpoint
-        if (request.getServletPath().startsWith("/auth/login")) {
+        if (request.getServletPath().startsWith("/auth/login") || request.getServletPath().startsWith("/api/users/register")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -51,12 +52,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (usernameFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // userDetails from database
-            UserDetails userDetails =
-                    context.getBean(CustomUserService.class).loadUserByUsername(usernameFromToken);
+            UserPrincipal userPrincipal =
+                    (UserPrincipal) context.getBean(CustomUserService.class).loadUserByUsername(usernameFromToken);
 
-            if(jwtUtil.IsTokenValid(token, userDetails)) { // username from request
+            if(jwtUtil.IsTokenValid(token, userPrincipal)) { // username from request
                 UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, Collections.emptyList());
+                        new UsernamePasswordAuthenticationToken(userPrincipal, null, Collections.emptyList());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }

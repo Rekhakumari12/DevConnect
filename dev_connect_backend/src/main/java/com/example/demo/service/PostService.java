@@ -38,70 +38,67 @@ public class PostService {
     private ReactionMapper reactionMapper;
 
     private PostResponse toResponse(Post post) {
-        PostResponse res = new PostResponse();
-        res.setId(post.getId());
-        res.setTitle(post.getTitle());
-        res.setContent(post.getContent());
-        res.setTags(post.getTags());
-        res.setVisibility(post.getVisibility().name());
-        res.setUsername(post.getUser().getUsername());
-        res.setCreatedAt(post.getCreatedAt());
-        res.setUpdatedAt(post.getUpdatedAt());
-        res.setReactions(reactionMapper.toReactionMap(post.getReactions()));
-        res.setComments(commentService.getCommentByPostId(post.getId()));
-        return res;
+        return new PostResponse(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getTags(),
+                post.getVisibility().name(),
+                post.getUser().getUsername(),
+                post.getCreatedAt(),
+                post.getUpdatedAt(),
+                commentService.getCommentByPostId(post.getId()),
+                reactionMapper.toReactionMap(post.getReactions())
+        );
     }
 
 
-    public PostResponse createPost(PostRequest postRequest, String username) {
-        User user = userRepo.findByUsername(username)
-                .orElseThrow(()-> new RuntimeException("User not found!"));
+    public PostResponse createPost(PostRequest postRequest, UUID userId) {
+        User user = userRepo.findById(userId);
         Post post = new Post();
         post.setUser(user);
-        post.setTitle(postRequest.title);
-        post.setContent(postRequest.content);
-        post.setTags(postRequest.techStack);
-        post.setVisibility(postRequest.visibility);
+        post.setTitle(postRequest.title());
+        post.setContent(postRequest.content());
+        post.setTags(postRequest.techStack());
+        post.setVisibility(postRequest.visibility());
         Post saved = postRepo.save(post);
         return toResponse(saved);
     }
 
     public List<PostResponse> getPublicPosts() {
         List<Post> posts = postRepo.findByVisibility(PostVisibility.PUBLIC);
-        return posts.stream().map(post -> {
-            PostResponse p = toResponse(post);
-            p.setComments(commentService.getCommentByPostId(post.getId()));
-            p.setReactions(reactionMapper.toReactionMap(post.getReactions()));
-            return p;
-        }).toList();
+        return postRepo.findByVisibility(PostVisibility.PUBLIC)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public List<PostResponse> getPostsByUsername(String username) {
-        boolean sameUser = authUtil.isSameUser(username);
-        List<Post> posts = postRepo.findAllByUser_Username(username);
+    public List<PostResponse> getPostsByUserId(UUID userId) {
+        boolean sameUser = authUtil.isSameUser(userId);
+        List<Post> posts = postRepo.findAllByUser_Id(userId);
         if (!sameUser) {
             return posts.stream().filter(post -> post.getVisibility() == PostVisibility.PUBLIC).map(this::toResponse).toList();
         }
         return posts.stream().map(this::toResponse).toList();
     }
 
-    public PostResponse updatePost(PostRequest req, String username, UUID postId) {
-        Post post = getOwnedPost(username, postId);
-        if(req.title!=null) post.setTitle(req.title);
-        if(req.content!=null) post.setContent(req.content);
-        if(req.techStack!=null) post.setTags(req.techStack);
-        if(req.visibility!=null) post.setVisibility(req.visibility);
+    public PostResponse updatePost(PostRequest req, UUID userId, UUID postId) {
+        Post post = getOwnedPost(userId, postId);
+        if(req.title() != null) post.setTitle(req.title());
+        if(req.content() != null) post.setContent(req.content());
+        if(req.techStack() != null) post.setTags(req.techStack());
+        if(req.visibility() != null) post.setVisibility(req.visibility());
         Post updatedPost = postRepo.save(post);
         return toResponse(updatedPost);
     }
 
-    public void deletePost(UUID postId, String username) {
-        Post post = getOwnedPost(username, postId);
+    public void deletePost(UUID postId, UUID userId) {
+        Post post = getOwnedPost(userId, postId);
         postRepo.delete(post);
     }
 
-    private Post getOwnedPost(String username, UUID postId) {
-        return postRepo.findByIdAndUser_Username(postId, username)
+    private Post getOwnedPost(UUID userId, UUID postId) {
+        return postRepo.findByIdAndUser_Id(postId, userId)
                 .orElseThrow(() -> new AccessDeniedException("Post not found or not owned by you!"));
     }
 

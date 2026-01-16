@@ -1,15 +1,14 @@
 package com.example.demo.dto;
 
+import com.example.demo.enums.ReactionType;
+
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-public class ReactionResponse {
-    private Map<String, Integer> reactions;
-
-    public Map<String, Integer> getReactions() {
-        return reactions;
-    }
-
-    public void setReactions(Map<String, Integer> reactions) {
-        this.reactions = reactions;
-    }
-}
+public record ReactionResponse(
+        ReactionType type,
+        UUID userId,
+        UUID postId,
+        UUID commentId
+) {}

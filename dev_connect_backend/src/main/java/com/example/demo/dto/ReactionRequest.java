@@ -1,12 +1,9 @@
 package com.example.demo.dto;
 
 import com.example.demo.enums.ReactionType;
+import jakarta.validation.constraints.NotBlank;
 
-public class ReactionRequest {
-    private ReactionType type;
-
-
-    public ReactionType getType() {
-        return type;
-    }
-}
+public record ReactionRequest(
+        @NotBlank
+        ReactionType type
+) {}

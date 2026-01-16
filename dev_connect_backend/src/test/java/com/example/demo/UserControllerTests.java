@@ -1,7 +1,8 @@
 package com.example.demo;
 
 import com.example.demo.controller.UserController;
-import com.example.demo.dto.UserProfile;
+import com.example.demo.dto.UserProfileRequest;
+import com.example.demo.dto.UserProfileResponse;
 import com.example.demo.entity.User;
 import com.example.demo.exception.GlobalExceptionHandler;
 import com.example.demo.repository.UserRepository;
@@ -21,9 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
 import java.util.UUID;
 
+import static jdk.jfr.internal.jfc.model.Constraint.any;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -67,8 +68,8 @@ class UserControllerTests {
         user.setSkills("Java, Spring");
         user.setBio("Software Developer");
 
-        UserProfile profile = new UserProfile(user);
-        when(userService.register(any(User.class))).thenReturn(profile);
+        UserProfileResponse profile = new UserProfileResponse(user);
+        when(userService.register(any(UserProfileRequest.class))).thenReturn(profile);
 
         String json = """
             {

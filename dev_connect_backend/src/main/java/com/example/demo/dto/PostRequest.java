@@ -5,10 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public class PostRequest {
-    @NotBlank
-    public String title;
-    public String content;
-    public List<String> techStack;
-    @NotBlank public PostVisibility visibility = PostVisibility.PUBLIC;
-}
+public record PostRequest(
+        @NotBlank
+        String title,
+        String content,
+        List<String> techStack,
+        @NotBlank PostVisibility visibility
+) {
+    public PostRequest {
+        if(visibility==null) visibility = PostVisibility.PUBLIC;
+    }
+};

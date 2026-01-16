@@ -1,9 +1,13 @@
 package com.example.demo.dto;
 
 
-public class UpdateProfileRequest {
-    public String email;
-    public String username;
-    public String skills;
-    public String bio;
-}
+import jakarta.validation.constraints.NotBlank;
+
+public record UpdateProfileRequest (
+    @NotBlank
+    String email,
+    @NotBlank
+    String username,
+    String skills,
+    String bio
+){}

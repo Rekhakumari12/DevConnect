@@ -2,10 +2,13 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ReactionRequest;
 import com.example.demo.dto.ReactionResponse;
-import com.example.demo.entity.Reaction;
+import com.example.demo.dto.ReactionResponseList;
+import com.example.demo.model.UserPrincipal;
 import com.example.demo.service.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -18,26 +21,26 @@ public class ReactionController {
     private ReactionService reactionService;
 
     @PostMapping("/posts/{postId}/reactions")
-    public ResponseEntity<ReactionResponse> reactToPost(@PathVariable UUID postId, @RequestBody ReactionRequest req) {
-        ReactionResponse reaction = reactionService.reactToPost(postId, req.getType());
-        return ResponseEntity.ok(reaction);
+    public ResponseEntity<ReactionResponse> reactToPost(@PathVariable UUID postId, @RequestBody ReactionRequest req, @AuthenticationPrincipal UserPrincipal principal) {
+        ReactionResponse reaction = reactionService.reactToPost(postId, req.type(), principal.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(reaction);
     }
 
     @PostMapping("/comments/{commentId}/reactions")
-    public ResponseEntity<ReactionResponse> reactToComment(@PathVariable UUID commentId, @RequestBody ReactionRequest req) {
-        ReactionResponse reaction = reactionService.reactToComment(commentId, req.getType());
-        return ResponseEntity.ok(reaction);
+    public ResponseEntity<ReactionResponse> reactToComment(@PathVariable UUID commentId, @RequestBody ReactionRequest req, @AuthenticationPrincipal UserPrincipal principal) {
+        ReactionResponse reaction = reactionService.reactToComment(commentId, req.type(), principal.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(reaction);
     }
 
     @GetMapping("/posts/{postId}/reactions")
-    public ResponseEntity<ReactionResponse> getPostReactions(@PathVariable UUID postId) {
-        ReactionResponse reaction = reactionService.getPostReactions(postId);
+    public ResponseEntity<ReactionResponseList> getPostReactions(@PathVariable UUID postId) {
+        ReactionResponseList reaction = reactionService.getReactionsByPostId(postId);
         return ResponseEntity.ok(reaction);
     }
 
     @GetMapping("/comments/{commentId}/reactions")
-    public ResponseEntity<ReactionResponse> getCommentReactions(@PathVariable UUID commentId) {
-        ReactionResponse reaction = reactionService.getCommentReactions(commentId);
+    public ResponseEntity<ReactionResponseList> getCommentReactions(@PathVariable UUID commentId) {
+        ReactionResponseList reaction = reactionService.getReactionsByCommentId(commentId);
         return ResponseEntity.ok(reaction);
     }
 }
