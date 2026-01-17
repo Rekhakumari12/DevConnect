@@ -31,7 +31,21 @@ Run the Spring Boot application.
 ```bash
 ./gradlew bootRun
 ```
+Create a PostgreSQL database.
+```bash
+CREATE DATABASE dev_connect;
+```
 
+Update application.yml or application.properties with database credentials.
+```bash
+spring.datasource.url=jdbc:postgresql://localhost:5432/dev_connect
+spring.datasource.username=postgres
+spring.datasource.password=your_password
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+```
 The server will start on http://localhost:8080.
 
 -------------------------
