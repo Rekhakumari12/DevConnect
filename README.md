@@ -111,14 +111,13 @@ Public API Endpoints
 Here is the API list, separated clearly by not logged-in (public) users and logged-in (authenticated) users.
 For not logged-in users (public APIs, no token required), these are allowed because they either show public data or validate via request parameters:
 
-```bash
-POST /api/users/register → register a new user
-POST /auth/login → login and get token
-GET /api/users?username={username} → view a user profile by username
-GET /api/posts/public → view all public posts
-GET /api/posts?username={username} → view public posts of a user
-GET /api/posts/search?keyword={keyword}&page={page}&size={size} → search public posts
-GET /swagger-ui/**, GET /v3/api-docs/** → API documentation
-GET /api/posts/{postId}/comments → read-only
-GET /api/posts/{postId}/reactions → read-only
-```
+`POST /api/users/register` → register a new user
+`POST /auth/login` → login and get token
+`GET /api/users?username={username}` → view a user profile by username
+`GET /api/posts/public` → view all public posts
+`GET /api/posts?username={username}` → view public posts of a user
+`GET /api/posts/search?keyword={keyword}&page={page}&size={size}` → search public posts
+`GET /swagger-ui/**, GET /v3/api-docs/**` → API documentation
+`GET /api/posts/{postId}/comments` → read-only
+`GET /api/posts/{postId}/reactions` → read-only
+
