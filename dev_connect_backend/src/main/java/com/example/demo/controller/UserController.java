@@ -7,6 +7,7 @@ import com.example.demo.entity.User;
 import com.example.demo.model.UserPrincipal;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,11 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserProfileResponse> getMyProfile(Principal principal) {
         return ResponseEntity.ok(userService.getProfile(principal));
+    }
+
+    @GetMapping("")
+    public ResponseEntity<UserProfileResponse> getProfileByUsername(@RequestParam String username) {
+        return ResponseEntity.ok(userService.getProfileByUsername(username));
     }
 
     @PutMapping("/me")

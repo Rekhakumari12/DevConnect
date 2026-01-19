@@ -66,24 +66,31 @@ public class PostService {
     }
 
     public List<PostResponse> getPublicPosts() {
-        List<Post> posts = postRepo.findByVisibility(PostVisibility.PUBLIC);
         return postRepo.findByVisibility(PostVisibility.PUBLIC)
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    public List<PostResponse> getPostsByUserId(UUID userId) {
-        boolean sameUser = authUtil.isSameUser(userId);
-        List<Post> posts = postRepo.findAllByUser_Id(userId);
-        if (!sameUser) {
-            return posts.stream().filter(post -> post.getVisibility() == PostVisibility.PUBLIC).map(this::toResponse).toList();
+    public List<PostResponse> getPostsByUsername(String username) {
+        boolean isLoginUser = AuthUtil.isAuthenticated();
+        List<Post> posts = postRepo.findAllByUser_Username(username);
+        if (isLoginUser) {
+            return posts
+                    .stream()
+                    .map(this::toResponse)
+                    .toList();
         }
-        return posts.stream().map(this::toResponse).toList();
+        return posts
+                .stream()
+                .filter(
+                        post -> post.getVisibility() == PostVisibility.PUBLIC)
+                .map(this::toResponse)
+                .toList();
     }
 
-    public PostResponse updatePost(PostRequest req, UUID userId, UUID postId) {
-        Post post = getOwnedPost(userId, postId);
+    public PostResponse updatePost(PostRequest req, String username, UUID postId) {
+        Post post = getOwnedPost(username, postId);
         if(req.title() != null) post.setTitle(req.title());
         if(req.content() != null) post.setContent(req.content());
         if(req.techStack() != null) post.setTags(req.techStack());
@@ -92,13 +99,13 @@ public class PostService {
         return toResponse(updatedPost);
     }
 
-    public void deletePost(UUID postId, UUID userId) {
-        Post post = getOwnedPost(userId, postId);
+    public void deletePost(UUID postId, String username) {
+        Post post = getOwnedPost(username, postId);
         postRepo.delete(post);
     }
 
-    private Post getOwnedPost(UUID userId, UUID postId) {
-        return postRepo.findByIdAndUser_Id(postId, userId)
+    private Post getOwnedPost(String username, UUID postId) {
+        return postRepo.findByIdAndUser_Username(postId, username)
                 .orElseThrow(() -> new AccessDeniedException("Post not found or not owned by you!"));
     }
 

@@ -77,7 +77,6 @@ public class JwtUtil {
         return username.equals(userDetails.getUsername()) && !isExpired(token);
     }
 
-
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }

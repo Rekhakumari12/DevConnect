@@ -12,11 +12,9 @@ import com.example.demo.repository.ReactionRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.AuthUtil;
 import com.example.demo.utils.ReactionMapper;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.UUID;
@@ -52,11 +50,13 @@ public class CommentService {
     }
 
      public CommentResponse addComment(UUID postId, String content, String username) {
-         User user = userRepo.findByUsername(username).orElseThrow();
-         Post post = postRepo.findById(postId).orElseThrow();
+         User user = userRepo.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+         Post post = postRepo.findById(postId)
+                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
          if(post.getVisibility()!= PostVisibility.PUBLIC){
-             throw new AccessDeniedException("cannot comment on a private post.");
+             throw new AccessDeniedException("Cannot comment on a private post.");
          }
 
         Comment c = new Comment();
@@ -69,15 +69,15 @@ public class CommentService {
      }
 
      public void deleteComment(UUID commentId) {
-         Comment c = commentRepo.findById(commentId).orElseThrow();
+         Comment c = commentRepo.findById(commentId)
+                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));;
          authUtil.verifyUserAccess(c.getUser().getId());
          commentRepo.delete(c);
      }
 
      public List<CommentResponse> getCommentByPostId(UUID postId) {
         postRepo.findById(postId)
-                .orElseThrow(()-> new ResourceNotFoundException("post not found"));
-
+                .orElseThrow(()-> new ResourceNotFoundException("Post not found"));
         List<Comment> comments = commentRepo.findAllByPostId(postId);
         return comments.stream().map(this::toResponse).toList();
      }

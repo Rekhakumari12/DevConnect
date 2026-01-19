@@ -12,13 +12,9 @@ import java.util.UUID;
 
 @Component
 public class AuthUtil {
-    public boolean isSameUser(UUID userId) {
-        UUID currentUserId = getCurrentUserId();
-        return currentUserId.equals(userId);
-    }
 
     public void verifyUserAccess(UUID userId) {
-        if (!isSameUser(userId)) {
+        if (!isAuthenticated()) {
             throw new AccessDeniedException("You are not allowed to do this action!");
         }
     }
@@ -36,6 +32,7 @@ public class AuthUtil {
     public static boolean isAuthenticated() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null
-                && auth.isAuthenticated();
+                && auth.isAuthenticated()
+                && !(auth instanceof AnonymousAuthenticationToken);
     }
 }

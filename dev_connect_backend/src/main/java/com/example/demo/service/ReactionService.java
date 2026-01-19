@@ -8,11 +8,11 @@ import com.example.demo.entity.Post;
 import com.example.demo.entity.Reaction;
 import com.example.demo.entity.User;
 import com.example.demo.enums.ReactionType;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.ReactionRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.security.AuthUtil;
 import com.example.demo.utils.ReactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,22 +90,26 @@ public class ReactionService {
     }
 
     public ReactionResponseList getReactionsByPostId(UUID postId) {
-        postRepo.findById(postId).orElseThrow();
+        postRepo.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         List<Reaction> reactions = reactionRepo.findAllByPostId(postId);
         return buildReactionResponse(reactions);
     }
 
     public ReactionResponseList getReactionsByCommentId(UUID commentId) {
-        commentRepo.findById(commentId).orElseThrow();
+        commentRepo.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         List<Reaction> reactions = reactionRepo.findAllByPostId(commentId);
         return buildReactionResponse(reactions);
     }
     public ReactionResponse reactToPost(UUID postId, ReactionType type, UUID userId) {
-        Post post = postRepo.findById(postId).orElseThrow();
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         return react(type, post, null, userId);
     }
     public ReactionResponse reactToComment(UUID commentId, ReactionType type, UUID userId){
-        Comment comment = commentRepo.findById(commentId).orElseThrow();
+        Comment comment = commentRepo.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         return react(type, null, comment, userId);
     }
 }

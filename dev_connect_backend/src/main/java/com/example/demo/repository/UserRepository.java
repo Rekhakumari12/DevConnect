@@ -12,6 +12,3 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByUsername(String username);
     User findById(UUID id);
 }
-
-
-//Spring Boot automatically generates the actual implementation—you just declare the interface.

@@ -3,11 +3,13 @@ package com.example.demo.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.List;
+
 public record UpdateProfileRequest (
     @NotBlank
     String email,
     @NotBlank
     String username,
-    String skills,
+    List<String> skills,
     String bio
 ){}

@@ -4,6 +4,7 @@ import com.example.demo.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -27,7 +28,7 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
 
     @Autowired
-    UserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,7 +36,18 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/users/register", "/auth/login", "/api/posts/all", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/posts/*/reactions").permitAll()
+                    .requestMatchers(
+                            "/api/users/register",
+                            "/auth/login",
+                            "/api/posts/public",
+                            "/api/posts/search",
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**")
+                    .permitAll()
                     .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults())
