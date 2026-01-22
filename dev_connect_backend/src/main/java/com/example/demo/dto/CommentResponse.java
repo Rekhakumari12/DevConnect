@@ -11,5 +11,5 @@ public record CommentResponse(
         UUID id,
         String content,
         String username,
-        List<ReactionSummary> reactions
+        long reactionsCount
 ) {}

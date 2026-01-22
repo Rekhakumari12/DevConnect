@@ -102,14 +102,24 @@ public class ReactionService {
         List<Reaction> reactions = reactionRepo.findAllByPostId(commentId);
         return buildReactionResponse(reactions);
     }
+
     public ReactionResponse reactToPost(UUID postId, ReactionType type, UUID userId) {
         Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         return react(type, post, null, userId);
     }
+
     public ReactionResponse reactToComment(UUID commentId, ReactionType type, UUID userId){
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         return react(type, null, comment, userId);
+    }
+
+    public long getCountByPostId(UUID postId) {
+        return reactionRepo.countByPostId(postId);
+    }
+
+    public long getCountByCommentId(UUID commentId) {
+        return reactionRepo.countByCommentId(commentId);
     }
 }

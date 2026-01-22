@@ -32,7 +32,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/my-post")
     public ResponseEntity<List<PostResponse>> getMyPosts(@AuthenticationPrincipal UserPrincipal p) {
         List<PostResponse> posts;
         posts = postService.getPostsByUsername(p.getUsername());
@@ -62,15 +62,5 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable UUID postId, @AuthenticationPrincipal UserPrincipal p) {
         postService.deletePost(postId, p.getUsername());
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<Page<PostResponse>> searchPosts(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<PostResponse> posts = postService.searchPosts(keyword, page, size);
-        return ResponseEntity.ok(posts);
     }
 }

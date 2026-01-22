@@ -8,6 +8,7 @@ import com.example.demo.enums.PostVisibility;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.AuthUtil;
+import com.example.demo.utils.PostMapper;
 import com.example.demo.utils.ReactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,20 +38,8 @@ public class PostService {
     @Autowired
     private ReactionMapper reactionMapper;
 
-    private PostResponse toResponse(Post post) {
-        return new PostResponse(
-                post.getId(),
-                post.getTitle(),
-                post.getContent(),
-                post.getTags(),
-                post.getVisibility().name(),
-                post.getUser().getUsername(),
-                post.getCreatedAt(),
-                post.getUpdatedAt(),
-                commentService.getCommentByPostId(post.getId()),
-                reactionMapper.toReactionMap(post.getReactions())
-        );
-    }
+    @Autowired
+    private PostMapper postMapper;
 
 
     public PostResponse createPost(PostRequest postRequest, UUID userId) {
@@ -62,30 +51,22 @@ public class PostService {
         post.setTags(postRequest.techStack());
         post.setVisibility(postRequest.visibility());
         Post saved = postRepo.save(post);
-        return toResponse(saved);
+        return postMapper.toResponse(saved);
     }
 
     public List<PostResponse> getPublicPosts() {
         return postRepo.findByVisibility(PostVisibility.PUBLIC)
                 .stream()
-                .map(this::toResponse)
+                .map(postMapper::toResponse)
                 .toList();
     }
 
     public List<PostResponse> getPostsByUsername(String username) {
         boolean isLoginUser = AuthUtil.isAuthenticated();
-        List<Post> posts = postRepo.findAllByUser_Username(username);
-        if (isLoginUser) {
-            return posts
-                    .stream()
-                    .map(this::toResponse)
-                    .toList();
-        }
-        return posts
+        return postRepo.findAllByUser_Username(username)
                 .stream()
-                .filter(
-                        post -> post.getVisibility() == PostVisibility.PUBLIC)
-                .map(this::toResponse)
+                .filter(post -> isLoginUser || post.getVisibility() == PostVisibility.PUBLIC)
+                .map(postMapper::toResponse)
                 .toList();
     }
 
@@ -96,7 +77,7 @@ public class PostService {
         if(req.techStack() != null) post.setTags(req.techStack());
         if(req.visibility() != null) post.setVisibility(req.visibility());
         Post updatedPost = postRepo.save(post);
-        return toResponse(updatedPost);
+        return postMapper.toResponse(updatedPost);
     }
 
     public void deletePost(UUID postId, String username) {
@@ -106,17 +87,7 @@ public class PostService {
 
     private Post getOwnedPost(String username, UUID postId) {
         return postRepo.findByIdAndUser_Username(postId, username)
-                .orElseThrow(() -> new AccessDeniedException("Post not found or not owned by you!"));
-    }
-
-    public Page<PostResponse> searchPosts(String keyword, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(
-                page == null ? 0 : page,
-                size == null ? 10 : size
-        );
-
-        Page<Post> posts = postRepo.searchPublicPosts(keyword, pageable);
-        return  posts.map(this::toResponse);
+                .orElseThrow(() -> new AccessDeniedException("Access Denied"));
     }
 
 }

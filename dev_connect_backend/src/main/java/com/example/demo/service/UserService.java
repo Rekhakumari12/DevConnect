@@ -4,6 +4,7 @@ import com.example.demo.dto.UpdateProfileRequest;
 import com.example.demo.dto.UserProfileRequest;
 import com.example.demo.dto.UserProfileResponse;
 import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.AuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +38,9 @@ public class UserService {
         return new UserProfileResponse(user);
     }
 
-    public UserProfileResponse getProfile(Principal principal) {
-        String username = principal.getName();
-        User user = userRepo.findByUsername(username)
-                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
-        return new UserProfileResponse(user);
-    }
-
     public UserProfileResponse getProfileByUsername(String username) {
         User user = userRepo.findByUsername(username)
-                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("User not found"));
         return new UserProfileResponse(user);
     }
 

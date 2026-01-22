@@ -45,7 +45,7 @@ public class CommentService {
                 comment.getId(),
                 comment.getContent(),
                 comment.getUser().getUsername(),
-                reactionMapper.toReactionMap(comment.getReactions())
+                commentRepo.countByPostId(comment.getPost().getId())
         );
     }
 
@@ -80,5 +80,9 @@ public class CommentService {
                 .orElseThrow(()-> new ResourceNotFoundException("Post not found"));
         List<Comment> comments = commentRepo.findAllByPostId(postId);
         return comments.stream().map(this::toResponse).toList();
+     }
+
+     public long getCountByPostId(UUID postId) {
+        return commentRepo.countByPostId(postId);
      }
 }

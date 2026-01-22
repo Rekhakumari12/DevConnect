@@ -12,4 +12,6 @@ public interface ReactionRepository extends JpaRepository<Reaction, UUID> {
     List<Reaction> findAllByCommentId(UUID id);
     Optional<Reaction> findByUserIdAndPostId(UUID userId, UUID postId);
     Optional<Reaction> findByUserIdAndCommentId(UUID userId, UUID commentId);
+    long countByPostId(UUID postId);
+    long countByCommentId(UUID commentId);
 }
