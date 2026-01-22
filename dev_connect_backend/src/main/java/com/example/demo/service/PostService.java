@@ -8,6 +8,9 @@ import com.example.demo.enums.PostVisibility;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.AuthUtil;
+import com.example.demo.service.fetch.LoggedInPostFetchStrategy;
+import com.example.demo.service.fetch.PostFetchStrategy;
+import com.example.demo.service.fetch.PublicPostFetchStrategy;
 import com.example.demo.utils.PostMapper;
 import com.example.demo.utils.ReactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +65,13 @@ public class PostService {
     }
 
     public List<PostResponse> getPostsByUsername(String username) {
-        boolean isLoginUser = AuthUtil.isAuthenticated();
-        return postRepo.findAllByUser_Username(username)
+        PostFetchStrategy strategy =
+                AuthUtil.isAuthenticated()
+                        ? new LoggedInPostFetchStrategy(postRepo)
+                        : new PublicPostFetchStrategy(postRepo);
+
+        return strategy.fetchPosts(username)
                 .stream()
-                .filter(post -> isLoginUser || post.getVisibility() == PostVisibility.PUBLIC)
                 .map(postMapper::toResponse)
                 .toList();
     }
