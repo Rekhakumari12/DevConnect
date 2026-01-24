@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.CommentRequest;
-import com.example.demo.dto.CommentResponse;
+import com.example.demo.dto.comment.CommentRequest;
+import com.example.demo.dto.comment.CommentResponse;
 import com.example.demo.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

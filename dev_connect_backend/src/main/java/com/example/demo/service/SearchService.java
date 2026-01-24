@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.PostResponse;
+import com.example.demo.dto.post.PostResponse;
 import com.example.demo.entity.Post;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.utils.PostMapper;
@@ -14,11 +14,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class SearchService {
 
-    @Autowired
-    private PostRepository postRepo;
+    private final PostRepository postRepo;
+    private final PostMapper postMapper;
 
     @Autowired
-    private PostMapper postMapper;
+    public SearchService(PostRepository postRepo, PostMapper postMapper) {
+        this.postRepo = postRepo;
+        this.postMapper = postMapper;
+    }
 
     public Page<PostResponse> searchPosts(String keyword, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(
@@ -27,6 +30,6 @@ public class SearchService {
         );
 
         Page<Post> posts = postRepo.searchPublicPosts(keyword, pageable);
-        return  posts.map(post -> postMapper.toResponse(post));
+        return  posts.map(postMapper::toResponse);
     }
 }

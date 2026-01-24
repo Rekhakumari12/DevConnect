@@ -1,9 +1,9 @@
 package com.example.demo.utils;
 
-import com.example.demo.dto.PostResponse;
+import com.example.demo.dto.post.PostResponse;
 import com.example.demo.entity.Post;
 import com.example.demo.service.CommentService;
-import com.example.demo.service.ReactionService;
+import com.example.demo.service.reaction.ReactionService;
 import org.springframework.stereotype.Component;
 
 @Component

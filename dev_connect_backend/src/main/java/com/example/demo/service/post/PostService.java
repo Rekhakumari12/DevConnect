@@ -1,22 +1,17 @@
-package com.example.demo.service;
+package com.example.demo.service.post;
 
-import com.example.demo.dto.PostRequest;
-import com.example.demo.dto.PostResponse;
+import com.example.demo.dto.post.PostRequest;
+import com.example.demo.dto.post.PostResponse;
 import com.example.demo.entity.Post;
 import com.example.demo.entity.User;
 import com.example.demo.enums.PostVisibility;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.AuthUtil;
-import com.example.demo.service.fetch.LoggedInPostFetchStrategy;
-import com.example.demo.service.fetch.PostFetchStrategy;
-import com.example.demo.service.fetch.PublicPostFetchStrategy;
+import com.example.demo.service.UserService;
 import com.example.demo.utils.PostMapper;
-import com.example.demo.utils.ReactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -26,27 +21,19 @@ import java.util.UUID;
 @Service
 public class PostService {
 
-    @Autowired
-    private UserRepository userRepo;
+    private final UserService userService;
+    private final PostRepository postRepo;
+    private final PostMapper postMapper;
 
     @Autowired
-    private PostRepository postRepo;
-
-    @Autowired
-    private AuthUtil authUtil;
-
-    @Autowired
-    private CommentService commentService;
-
-    @Autowired
-    private ReactionMapper reactionMapper;
-
-    @Autowired
-    private PostMapper postMapper;
-
+    public PostService(UserService userService, PostRepository postRepo, PostMapper postMapper) {
+        this.userService = userService;
+        this.postRepo = postRepo;
+        this.postMapper = postMapper;
+    }
 
     public PostResponse createPost(PostRequest postRequest, UUID userId) {
-        User user = userRepo.findById(userId);
+        User user = userService.getById(userId);
         Post post = new Post();
         post.setUser(user);
         post.setTitle(postRequest.title());
@@ -94,6 +81,11 @@ public class PostService {
     private Post getOwnedPost(String username, UUID postId) {
         return postRepo.findByIdAndUser_Username(postId, username)
                 .orElseThrow(() -> new AccessDeniedException("Access Denied"));
+    }
+
+    public Post getById(UUID postId) {
+        return postRepo.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
     }
 
 }

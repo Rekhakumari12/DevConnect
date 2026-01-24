@@ -8,13 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public class UserPrincipal implements UserDetails {
-
-    final private User user;
-
-    public UserPrincipal(User user) {
-        this.user = user;
-    }
+public record UserPrincipal(User user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,11 +1,10 @@
 package com.example.demo.utils;
 
-import com.example.demo.dto.ReactionSummary;
+import com.example.demo.dto.reaction.ReactionSummary;
 import com.example.demo.entity.Reaction;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.PostResponse;
+import com.example.demo.dto.post.PostResponse;
 import com.example.demo.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

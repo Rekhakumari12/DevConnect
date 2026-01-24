@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.post;
 
 import com.example.demo.enums.PostVisibility;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.reaction;
 
 import com.example.demo.enums.ReactionType;
 import jakarta.validation.constraints.NotBlank;

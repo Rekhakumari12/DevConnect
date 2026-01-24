@@ -1,4 +1,4 @@
-package com.example.demo.service.fetch;
+package com.example.demo.service.post;
 
 import com.example.demo.enums.PostVisibility;
 import com.example.demo.repository.PostRepository;
@@ -6,12 +6,7 @@ import com.example.demo.entity.Post;
 
 import java.util.List;
 
-public class PublicPostFetchStrategy implements PostFetchStrategy {
-    private final PostRepository postRepo;
-
-    public PublicPostFetchStrategy(PostRepository postRepo) {
-        this.postRepo = postRepo;
-    }
+public record PublicPostFetchStrategy(PostRepository postRepo) implements PostFetchStrategy {
 
     @Override
     public List<Post> fetchPosts(String username) {

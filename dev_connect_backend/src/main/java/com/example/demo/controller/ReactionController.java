@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ReactionRequest;
-import com.example.demo.dto.ReactionResponse;
-import com.example.demo.dto.ReactionResponseList;
+import com.example.demo.dto.reaction.ReactionRequest;
+import com.example.demo.dto.reaction.ReactionResponse;
+import com.example.demo.dto.reaction.ReactionResponseList;
 import com.example.demo.model.UserPrincipal;
-import com.example.demo.service.ReactionService;
+import com.example.demo.service.reaction.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

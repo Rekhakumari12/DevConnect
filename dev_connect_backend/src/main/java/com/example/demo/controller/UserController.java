@@ -1,13 +1,11 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UpdateProfileRequest;
-import com.example.demo.dto.UserProfileRequest;
-import com.example.demo.dto.UserProfileResponse;
-import com.example.demo.entity.User;
+import com.example.demo.dto.profile.UpdateProfileRequest;
+import com.example.demo.dto.profile.UserProfileRequest;
+import com.example.demo.dto.profile.UserProfileResponse;
 import com.example.demo.model.UserPrincipal;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

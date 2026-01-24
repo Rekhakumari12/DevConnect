@@ -1,15 +1,14 @@
 package com.example.demo;
 
 import com.example.demo.controller.UserController;
-import com.example.demo.dto.UserProfileRequest;
-import com.example.demo.dto.UserProfileResponse;
+import com.example.demo.dto.profile.UserProfileRequest;
+import com.example.demo.dto.profile.UserProfileResponse;
 import com.example.demo.entity.User;
 import com.example.demo.exception.GlobalExceptionHandler;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtFilter;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
-import static jdk.jfr.internal.jfc.model.Constraint.any;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 

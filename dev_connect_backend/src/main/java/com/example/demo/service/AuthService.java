@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.login.LoginRequest;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,11 +12,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    public AuthService(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = new JwtUtil();
+    }
 
     public String verify(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager

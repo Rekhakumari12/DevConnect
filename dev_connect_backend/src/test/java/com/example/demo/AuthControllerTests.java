@@ -1,8 +1,8 @@
 package com.example.demo;
 
 import com.example.demo.controller.AuthController;
-import com.example.demo.dto.LoginRequest;
-import com.example.demo.dto.LoginResponse;
+import com.example.demo.dto.login.LoginRequest;
+import com.example.demo.dto.login.LoginResponse;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;

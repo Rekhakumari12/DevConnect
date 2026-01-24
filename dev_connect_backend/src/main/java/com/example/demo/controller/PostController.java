@@ -1,21 +1,15 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.PostRequest;
-import com.example.demo.dto.PostResponse;
-import com.example.demo.entity.Post;
-import com.example.demo.entity.User;
+import com.example.demo.dto.post.PostRequest;
+import com.example.demo.dto.post.PostResponse;
 import com.example.demo.model.UserPrincipal;
-import com.example.demo.security.AuthUtil;
-import com.example.demo.service.PostService;
+import com.example.demo.service.post.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 

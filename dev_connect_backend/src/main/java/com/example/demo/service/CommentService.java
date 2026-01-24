@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.CommentResponse;
+import com.example.demo.dto.comment.CommentResponse;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Post;
 import com.example.demo.entity.User;
@@ -8,10 +8,10 @@ import com.example.demo.enums.PostVisibility;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
-import com.example.demo.repository.ReactionRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.AuthUtil;
-import com.example.demo.utils.ReactionMapper;
+import com.example.demo.service.post.PostService;
+import com.example.demo.service.reaction.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -21,42 +21,41 @@ import java.util.UUID;
 
 @Service
 public class CommentService {
+    private final UserService userService;
+    private final PostService postService;
+    private final CommentRepository commentRepo;
+    private final AuthUtil authUtil;
+    private final ReactionService reactionService;
 
     @Autowired
-    UserRepository userRepo;
+    public CommentService(UserService userService,
+                          PostService postService,
+                          CommentRepository commentRepo,
+                          AuthUtil authUtil,
+                          ReactionService reactionService) {
 
-    @Autowired
-    PostRepository postRepo;
-
-    @Autowired
-    CommentRepository commentRepo;
-
-    @Autowired
-    AuthUtil authUtil;
-
-    @Autowired
-    ReactionRepository reactionRepo;
-
-    @Autowired
-    private ReactionMapper reactionMapper;
+        this.userService = userService;
+        this.postService = postService;
+        this.commentRepo = commentRepo;
+        this.authUtil = authUtil;
+        this.reactionService = reactionService;
+    }
 
     private CommentResponse toResponse(Comment comment) {
         return new CommentResponse(
                 comment.getId(),
                 comment.getContent(),
                 comment.getUser().getUsername(),
-                commentRepo.countByPostId(comment.getPost().getId())
+                reactionService.getCountByCommentId(comment.getId())
         );
     }
 
      public CommentResponse addComment(UUID postId, String content, String username) {
-         User user = userRepo.findByUsername(username)
-                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-         Post post = postRepo.findById(postId)
-                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+         User user = userService.getByUsername(username);
+         Post post = postService.getById(postId);
 
          if(post.getVisibility()!= PostVisibility.PUBLIC){
-             throw new AccessDeniedException("Cannot comment on a private post.");
+             throw new AccessDeniedException("Access Denied");
          }
 
         Comment c = new Comment();
@@ -69,20 +68,23 @@ public class CommentService {
      }
 
      public void deleteComment(UUID commentId) {
-         Comment c = commentRepo.findById(commentId)
-                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));;
+         Comment c = getById(commentId);
          authUtil.verifyUserAccess(c.getUser().getId());
          commentRepo.delete(c);
      }
 
      public List<CommentResponse> getCommentByPostId(UUID postId) {
-        postRepo.findById(postId)
-                .orElseThrow(()-> new ResourceNotFoundException("Post not found"));
+        postService.getById(postId);
         List<Comment> comments = commentRepo.findAllByPostId(postId);
         return comments.stream().map(this::toResponse).toList();
      }
 
      public long getCountByPostId(UUID postId) {
         return commentRepo.countByPostId(postId);
+     }
+
+     public Comment getById(UUID commentId) {
+        return commentRepo.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
      }
 }

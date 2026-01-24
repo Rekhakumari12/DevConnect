@@ -21,7 +21,7 @@ public class AuthUtil {
 
     private static UUID getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth == null || !auth.isAuthenticated()) {
+        if(!isAuthenticated()) {
             throw new RuntimeException("Unauthenticated user");
         }
 
