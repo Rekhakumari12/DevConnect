@@ -1,9 +1,12 @@
 package com.example.demo.exception;
 
+import io.jsonwebtoken.security.SignatureException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,12 +55,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Map<String, Object>> handleAuthFailure() {
+    public ResponseEntity<Map<String, Object>> handleAuthFailure(AuthenticationException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", Instant.now().toString());
         response.put("status", HttpStatus.UNAUTHORIZED.value());
         response.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-        response.put("message", "Username or password is invalid");
+        response.put("message", "Bad credentials");
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(response);
@@ -77,18 +81,28 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now().toString());
         body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "not found");
+        body.put("error", "Not found");
         body.put("message", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidJson(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getMostSpecificCause();
+        String message = "Invalid request payload";
+
+        if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException ife
+                && ife.getTargetType().isEnum()) {
+
+            Object[] allowedValues = ife.getTargetType().getEnumConstants();
+            message = "Invalid value. Allowed values are: " + Arrays.toString(allowedValues);
+        }
+
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", Instant.now().toString());
         response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("error", "bad request");
-        response.put("message", ex.getMessage());
+        response.put("message", message);
         return ResponseEntity.badRequest().body(response);
     }
 
@@ -97,7 +111,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> errors = new HashMap<>();
         errors.put("timestamp", Instant.now().toString());
         errors.put("status", HttpStatus.BAD_REQUEST.value());
-        errors.put("error", "validation");
+        errors.put("error", "Validation");
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             System.out.println(error.getField()+" "+ error.getDefaultMessage());
             errors.put("message", error.getDefaultMessage());
@@ -110,9 +124,21 @@ public class GlobalExceptionHandler {
         Map<String, Object> error = new HashMap<>();
         error.put("timestamp", Instant.now().toString());
         error.put("status", HttpStatus.FORBIDDEN.value());
-        error.put("error", "forbidden");
+        error.put("error", "Forbidden");
         error.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<Map<String, Object>> handleDatabaseDown(DataAccessException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("timestamp", Instant.now().toString());
+        error.put("status", HttpStatus.SERVICE_UNAVAILABLE.value());
+        error.put("error", "SERVICE_UNAVAILABLE");
+        error.put("message", "Service is temporarily unavailable. Please try again later");
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(error);
     }
 
 }

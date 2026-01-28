@@ -28,15 +28,13 @@ public class PostController {
 
     @GetMapping("/my-post")
     public ResponseEntity<List<PostResponse>> getMyPosts(@AuthenticationPrincipal UserPrincipal p) {
-        List<PostResponse> posts;
-        posts = postService.getPostsByUsername(p.getUsername());
+        List<PostResponse> posts = postService.getPostsByUsername(p.getUsername());
         return ResponseEntity.ok(posts);
     }
 
     @GetMapping("")
     public ResponseEntity<List<PostResponse>> getPostsByUsername(@RequestParam String username) {
-        List<PostResponse> posts;
-        posts = postService.getPostsByUsername(username);
+        List<PostResponse> posts = postService.getPostsByUsername(username);
         return ResponseEntity.ok(posts);
     }
 

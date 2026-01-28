@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.reaction.ReactionRequest;
 import com.example.demo.dto.reaction.ReactionResponse;
-import com.example.demo.dto.reaction.ReactionResponseList;
+import com.example.demo.dto.reaction.ReactionSummary;
 import com.example.demo.model.UserPrincipal;
 import com.example.demo.service.reaction.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,14 +34,14 @@ public class ReactionController {
     }
 
     @GetMapping("/posts/{postId}/reactions")
-    public ResponseEntity<ReactionResponseList> getPostReactions(@PathVariable UUID postId) {
-        ReactionResponseList reaction = reactionService.getReactionsByPostId(postId);
+    public ResponseEntity<List<ReactionSummary>> getPostReactions(@PathVariable UUID postId) {
+        List<ReactionSummary> reaction = reactionService.getReactionsByPostId(postId);
         return ResponseEntity.ok(reaction);
     }
 
     @GetMapping("/comments/{commentId}/reactions")
-    public ResponseEntity<ReactionResponseList> getCommentReactions(@PathVariable UUID commentId) {
-        ReactionResponseList reaction = reactionService.getReactionsByCommentId(commentId);
+    public ResponseEntity<List<ReactionSummary>> getCommentReactions(@PathVariable UUID commentId) {
+        List<ReactionSummary> reaction = reactionService.getReactionsByCommentId(commentId);
         return ResponseEntity.ok(reaction);
     }
 }

@@ -69,12 +69,13 @@ public class CommentService {
 
      public void deleteComment(UUID commentId) {
          Comment c = getById(commentId);
-         authUtil.verifyUserAccess(c.getUser().getId());
+         authUtil.verifyUserAccess(c.getUser().getUsername());
          commentRepo.delete(c);
      }
 
      public List<CommentResponse> getCommentByPostId(UUID postId) {
         postService.getById(postId);
+        postService.checkPrivatePost(postId);
         List<Comment> comments = commentRepo.findAllByPostId(postId);
         return comments.stream().map(this::toResponse).toList();
      }

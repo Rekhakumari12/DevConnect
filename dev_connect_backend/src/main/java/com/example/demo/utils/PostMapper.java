@@ -9,15 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostMapper {
 
-    private final CommentService commentService;
-    private final ReactionService reactionService;
-
-    public PostMapper(CommentService commentService, ReactionService reactionService) {
-        this.commentService = commentService;
-        this.reactionService = reactionService;
-    }
-
-    public PostResponse toResponse(Post post) {
+    public PostResponse toResponse(
+            Post post,
+            long commentCount,
+            long reactionCount
+    ) {
         return new PostResponse(
                 post.getId(),
                 post.getTitle(),
@@ -27,8 +23,8 @@ public class PostMapper {
                 post.getUser().getUsername(),
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
-                commentService.getCountByPostId(post.getId()),
-                reactionService.getCountByPostId(post.getId())
+                commentCount,
+                reactionCount
         );
     }
 }

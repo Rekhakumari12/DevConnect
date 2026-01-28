@@ -1,6 +1,5 @@
 package com.example.demo.security;
 
-import com.example.demo.entity.User;
 import com.example.demo.model.UserPrincipal;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.CustomUserService;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -41,11 +39,10 @@ public class JwtFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String usernameFromToken = null;
-
         // Skip login endpoint
         String path = request.getServletPath();
         if (path.startsWith("/auth/login")
-                || path.startsWith("/api/users")
+                || path.startsWith("/api/users/register")
                 || path.startsWith("/api/posts/public")
                 || path.startsWith("/api/search")) {
             filterChain.doFilter(request, response);

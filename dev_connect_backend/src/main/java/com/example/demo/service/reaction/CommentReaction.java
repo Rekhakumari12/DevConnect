@@ -3,7 +3,6 @@ package com.example.demo.service.reaction;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Reaction;
 import com.example.demo.enums.ReactionTargetType;
-import com.example.demo.repository.ReactionRepository;
 
 import java.util.UUID;
 

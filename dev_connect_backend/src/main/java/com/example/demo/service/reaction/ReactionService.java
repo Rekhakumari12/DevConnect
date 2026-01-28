@@ -1,7 +1,6 @@
 package com.example.demo.service.reaction;
 
 import com.example.demo.dto.reaction.ReactionResponse;
-import com.example.demo.dto.reaction.ReactionResponseList;
 import com.example.demo.dto.reaction.ReactionSummary;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Post;
@@ -12,8 +11,6 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.ReactionRepository;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.CommentService;
 import com.example.demo.service.UserService;
 import com.example.demo.service.post.PostService;
 import com.example.demo.utils.ReactionMapper;
@@ -29,7 +26,7 @@ public class ReactionService {
 
     private final ReactionRepository reactionRepo;
     private final ReactionMapper reactionMapper;
-    private final CommentService commentService;
+    private final CommentRepository commentRepo;
     private final UserService userService;
     private final PostService postService;
 
@@ -38,20 +35,19 @@ public class ReactionService {
             PostRepository postRepo,
             ReactionRepository reactionRepo,
             ReactionMapper reactionMapper,
-            CommentService commentService,
+            CommentRepository commentRepo,
             UserService userService,
             PostService postService
     ) {
         this.reactionRepo = reactionRepo;
         this.reactionMapper = reactionMapper;
-        this.commentService = commentService;
+        this.commentRepo = commentRepo;
         this.userService = userService;
         this.postService = postService;
     }
 
-    private ReactionResponseList buildResponseList(List<Reaction> reactions) {
-        List<ReactionSummary> reactionMap = reactionMapper.toReactionMap(reactions);
-        return new ReactionResponseList(reactionMap);
+    private List<ReactionSummary> buildResponseList(List<Reaction> reactions) {
+        return reactionMapper.toReactionMap(reactions);
     }
 
     private ReactionResponse buildResponse(
@@ -70,18 +66,11 @@ public class ReactionService {
     }
 
     // target - post or comment
-    private ReactionResponse react(
-            ReactionType type,
-            ReactionTarget target,
-            UUID userId,
-            Optional<Reaction> currentReaction
-    ) {
+    private ReactionResponse react(ReactionType type, ReactionTarget target, UUID userId, Optional<Reaction> currentReaction) {
         User user = userService.getById(userId);
 
         // undo existing reaction
-        if (currentReaction.isPresent()
-                && currentReaction.get().getType() == type) {
-
+        if (currentReaction.isPresent() && currentReaction.get().getType() == type) {
             reactionRepo.delete(currentReaction.get());
             return buildResponse(null, userId, target);
         }
@@ -99,27 +88,30 @@ public class ReactionService {
     }
 
 
-    public ReactionResponseList getReactionsByPostId(UUID postId) {
+    public List<ReactionSummary> getReactionsByPostId(UUID postId) {
         postService.getById(postId);
+        postService.checkPrivatePost(postId);
         List<Reaction> reactions = reactionRepo.findAllByPostId(postId);
         return buildResponseList(reactions);
     }
 
-    public ReactionResponseList getReactionsByCommentId(UUID commentId) {
-        commentService.getById(commentId);
-        List<Reaction> reactions = reactionRepo.findAllByCommentId(commentId);
-        return buildResponseList(reactions);
+    public List<ReactionSummary> getReactionsByCommentId(UUID commentId) {
+        commentRepo.findById(commentId)
+            .orElseThrow(()-> new ResourceNotFoundException("comment not found"));;
+        return buildResponseList(reactionRepo.findAllByCommentId(commentId));
     }
 
     public ReactionResponse reactToPost(UUID postId, ReactionType type, UUID userId) {
         Post post = postService.getById(postId);
+        postService.checkPrivatePost(postId);
         Optional<Reaction> currentReaction = reactionRepo.findByUserIdAndPostId(userId, postId);
         ReactionTarget target = new PostReaction(post);
         return react(type, target, userId, currentReaction);
     }
 
     public ReactionResponse reactToComment(UUID commentId, ReactionType type, UUID userId){
-        Comment comment = commentService.getById(commentId);
+        Comment comment = commentRepo.findById(commentId)
+                .orElseThrow(()-> new ResourceNotFoundException("comment not found"));
         Optional<Reaction> currentReaction = reactionRepo.findByUserIdAndCommentId(userId, commentId);
         ReactionTarget target = new CommentReaction(comment);
         return react(type, target, userId, currentReaction);

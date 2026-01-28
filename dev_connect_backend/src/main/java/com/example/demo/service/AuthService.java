@@ -16,9 +16,9 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     @Autowired
-    public AuthService(AuthenticationManager authenticationManager) {
+    public AuthService(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
-        this.jwtUtil = new JwtUtil();
+        this.jwtUtil = jwtUtil;
     }
 
     public String verify(LoginRequest loginRequest) {

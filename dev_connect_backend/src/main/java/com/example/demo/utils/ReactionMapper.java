@@ -17,20 +17,15 @@ public class ReactionMapper {
 
         return reactions.stream()
                 .collect(Collectors.groupingBy(r -> r.getType().name()))
-                .entrySet()
+                .values()
                 .stream()
-                .map(entry -> {
-                    String type = entry.getKey();
-                    List<Reaction> groupedReactions = entry.getValue();
-
-                    int count = groupedReactions.size();
-
-                    List<String> usernames = groupedReactions.stream()
-                            .map(r -> r.getUser().getUsername())
-                            .toList();
-
-                    return new ReactionSummary(type, count, usernames);
-                })
+                .map(group -> new ReactionSummary(
+                        group.get(0).getType().name(),
+                        group.size(),
+                        group.stream()
+                                .map(r -> r.getUser().getUsername())
+                                .toList()
+                ))
                 .toList();
     }
 }

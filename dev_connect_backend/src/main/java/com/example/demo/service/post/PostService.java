@@ -6,8 +6,9 @@ import com.example.demo.entity.Post;
 import com.example.demo.entity.User;
 import com.example.demo.enums.PostVisibility;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.ReactionRepository;
 import com.example.demo.security.AuthUtil;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.PostMapper;
@@ -24,12 +25,28 @@ public class PostService {
     private final UserService userService;
     private final PostRepository postRepo;
     private final PostMapper postMapper;
+    private final CommentRepository commentRepo;
+    private final ReactionRepository reactionRepo;
 
     @Autowired
-    public PostService(UserService userService, PostRepository postRepo, PostMapper postMapper) {
+    public PostService(
+            UserService userService,
+            PostRepository postRepo,
+            PostMapper postMapper,
+            CommentRepository commentRepo,
+            ReactionRepository reactionRepo
+    ) {
         this.userService = userService;
         this.postRepo = postRepo;
         this.postMapper = postMapper;
+        this.commentRepo = commentRepo;
+        this.reactionRepo = reactionRepo;
+    }
+
+    private PostResponse toResponse(Post post) {
+        long commentCount = commentRepo.countByPostId(post.getId());
+        long reactionCount = reactionRepo.countByPostId(post.getId());
+        return postMapper.toResponse(post, commentCount, reactionCount);
     }
 
     public PostResponse createPost(PostRequest postRequest, UUID userId) {
@@ -41,25 +58,25 @@ public class PostService {
         post.setTags(postRequest.techStack());
         post.setVisibility(postRequest.visibility());
         Post saved = postRepo.save(post);
-        return postMapper.toResponse(saved);
+        return toResponse(saved);
     }
 
     public List<PostResponse> getPublicPosts() {
         return postRepo.findByVisibility(PostVisibility.PUBLIC)
                 .stream()
-                .map(postMapper::toResponse)
+                .map(this::toResponse)
                 .toList();
     }
 
     public List<PostResponse> getPostsByUsername(String username) {
         PostFetchStrategy strategy =
-                AuthUtil.isAuthenticated()
+                AuthUtil.isAuthenticated(username)
                         ? new LoggedInPostFetchStrategy(postRepo)
                         : new PublicPostFetchStrategy(postRepo);
 
         return strategy.fetchPosts(username)
                 .stream()
-                .map(postMapper::toResponse)
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -70,7 +87,7 @@ public class PostService {
         if(req.techStack() != null) post.setTags(req.techStack());
         if(req.visibility() != null) post.setVisibility(req.visibility());
         Post updatedPost = postRepo.save(post);
-        return postMapper.toResponse(updatedPost);
+        return toResponse(updatedPost);
     }
 
     public void deletePost(UUID postId, String username) {
@@ -87,5 +104,14 @@ public class PostService {
         return postRepo.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
     }
+
+    public boolean checkPrivatePost(UUID postId) {
+        Post post = getById(postId);
+        if (post.getVisibility() == PostVisibility.PRIVATE) {
+            throw new AccessDeniedException("Access Denied");
+        }
+        return true;
+    }
+
 
 }

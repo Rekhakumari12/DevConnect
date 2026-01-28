@@ -30,12 +30,17 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
             .csrf(csrf -> csrf.disable())
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
             .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.GET,"/api/users/my-profile").authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
