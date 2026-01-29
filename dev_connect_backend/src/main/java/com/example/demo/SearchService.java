@@ -1,9 +1,9 @@
-package com.example.demo.service;
+package com.example.demo;
 
 import com.example.demo.dto.post.PostResponse;
 import com.example.demo.entity.Post;
 import com.example.demo.repository.PostRepository;
-import com.example.demo.service.reaction.ReactionService;
+import com.example.demo.reaction.ReactionService;
 import com.example.demo.utils.PostMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

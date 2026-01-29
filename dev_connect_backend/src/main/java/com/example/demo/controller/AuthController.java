@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.login.LoginRequest;
 import com.example.demo.dto.login.LoginResponse;
-import com.example.demo.service.AuthService;
+import com.example.demo.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.example.demo.service.post;
+package com.example.demo.post;
 import com.example.demo.entity.Post;
 import java.util.List;
 

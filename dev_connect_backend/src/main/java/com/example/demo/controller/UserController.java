@@ -4,7 +4,7 @@ import com.example.demo.dto.profile.UpdateProfileRequest;
 import com.example.demo.dto.profile.UserProfileRequest;
 import com.example.demo.dto.profile.UserProfileResponse;
 import com.example.demo.model.UserPrincipal;
-import com.example.demo.service.UserService;
+import com.example.demo.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

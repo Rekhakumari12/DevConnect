@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo;
 
 import com.example.demo.dto.login.LoginRequest;
 import com.example.demo.repository.UserRepository;

@@ -2,7 +2,7 @@ package com.example.demo.security;
 
 import com.example.demo.model.UserPrincipal;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.service.CustomUserService;
+import com.example.demo.CustomUserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.AuthService;
 import com.example.demo.dto.login.LoginRequest;
 import com.example.demo.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;

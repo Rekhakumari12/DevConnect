@@ -1,4 +1,4 @@
-package com.example.demo.service.reaction;
+package com.example.demo.reaction;
 
 import com.example.demo.entity.Reaction;
 import com.example.demo.enums.ReactionTargetType;

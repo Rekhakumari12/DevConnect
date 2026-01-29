@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo;
 
 import com.example.demo.dto.comment.CommentResponse;
 import com.example.demo.entity.Comment;
@@ -7,11 +7,9 @@ import com.example.demo.entity.User;
 import com.example.demo.enums.PostVisibility;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CommentRepository;
-import com.example.demo.repository.PostRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.security.AuthUtil;
-import com.example.demo.service.post.PostService;
-import com.example.demo.service.reaction.ReactionService;
+import com.example.demo.post.PostService;
+import com.example.demo.reaction.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;

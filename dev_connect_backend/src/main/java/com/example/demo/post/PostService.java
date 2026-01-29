@@ -1,4 +1,4 @@
-package com.example.demo.service.post;
+package com.example.demo.post;
 
 import com.example.demo.dto.post.PostRequest;
 import com.example.demo.dto.post.PostResponse;
@@ -10,9 +10,12 @@ import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.ReactionRepository;
 import com.example.demo.security.AuthUtil;
-import com.example.demo.service.UserService;
+import com.example.demo.UserService;
 import com.example.demo.utils.PostMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +23,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class PostService {
+public class
+PostService {
 
     private final UserService userService;
     private final PostRepository postRepo;
@@ -61,12 +65,24 @@ public class PostService {
         return toResponse(saved);
     }
 
-    public List<PostResponse> getPublicPosts() {
-        return postRepo.findByVisibility(PostVisibility.PUBLIC)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+//    public List<PostResponse> getPublicPosts() {
+//        return postRepo.findByVisibility(PostVisibility.PUBLIC)
+//                .stream()
+//                .map(this::toResponse)
+//                .toList();
+//    }
+
+    public Page<PostResponse> getPublicPosts(Integer page, Integer size) {
+
+        Pageable pageable = PageRequest.of(
+                page == null ? 0 : page,
+                size == null ? 10 : size
+        );
+
+        Page<Post> posts = postRepo.findByVisibility(PostVisibility.PUBLIC, pageable);
+        return posts.map(this::toResponse);
     }
+
 
     public List<PostResponse> getPostsByUsername(String username) {
         PostFetchStrategy strategy =

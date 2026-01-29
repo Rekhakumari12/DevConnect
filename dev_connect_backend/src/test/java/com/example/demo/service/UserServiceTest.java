@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.UserService;
 import com.example.demo.dto.profile.UpdateProfileRequest;
 import com.example.demo.dto.profile.UserProfileRequest;
 import com.example.demo.dto.profile.UserProfileResponse;

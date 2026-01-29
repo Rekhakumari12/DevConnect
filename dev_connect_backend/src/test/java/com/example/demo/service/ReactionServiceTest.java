@@ -1,5 +1,6 @@
-package com.example.demo.service.reaction;
+package com.example.demo.service;
 
+import com.example.demo.UserService;
 import com.example.demo.dto.reaction.ReactionResponse;
 import com.example.demo.dto.reaction.ReactionSummary;
 import com.example.demo.entity.Comment;
@@ -8,10 +9,10 @@ import com.example.demo.entity.Reaction;
 import com.example.demo.entity.User;
 import com.example.demo.enums.ReactionType;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.reaction.ReactionService;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.ReactionRepository;
-import com.example.demo.service.UserService;
-import com.example.demo.service.post.PostService;
+import com.example.demo.post.PostService;
 import com.example.demo.utils.ReactionMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

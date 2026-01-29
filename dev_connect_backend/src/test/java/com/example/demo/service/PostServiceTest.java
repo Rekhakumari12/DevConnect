@@ -1,20 +1,25 @@
-package com.example.demo.service.post;
+package com.example.demo.service;
 
+import com.example.demo.UserService;
 import com.example.demo.dto.post.PostRequest;
 import com.example.demo.dto.post.PostResponse;
 import com.example.demo.entity.Post;
 import com.example.demo.entity.User;
 import com.example.demo.enums.PostVisibility;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.post.PostService;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.ReactionRepository;
-import com.example.demo.service.UserService;
 import com.example.demo.utils.PostMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
@@ -79,21 +84,36 @@ class PostServiceTest {
         Post post2 = new Post();
         post2.setId(UUID.randomUUID());
 
-        PostResponse resp1 = new PostResponse(post1.getId(), "T1", "C1", List.of(), "PUBLIC", "U1", LocalDateTime.now(), LocalDateTime.now(), 0, 0);
-        PostResponse resp2 = new PostResponse(post2.getId(), "T2", "C2", List.of(), "PUBLIC", "U2", LocalDateTime.now(), LocalDateTime.now(), 0, 0);
+        PostResponse resp1 = new PostResponse(
+                post1.getId(), "T1", "C1", List.of(),
+                "PUBLIC", "U1",
+                LocalDateTime.now(), LocalDateTime.now(), 0, 0
+        );
 
-        when(postRepo.findByVisibility(PostVisibility.PUBLIC)).thenReturn(List.of(post1, post2));
+        PostResponse resp2 = new PostResponse(
+                post2.getId(), "T2", "C2", List.of(),
+                "PUBLIC", "U2",
+                LocalDateTime.now(), LocalDateTime.now(), 0, 0
+        );
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Post> postPage = new PageImpl<>(List.of(post1, post2), pageable, 2);
+
+        when(postRepo.findByVisibility(eq(PostVisibility.PUBLIC), any(Pageable.class)))
+                .thenReturn(postPage);
+
         when(commentRepo.countByPostId(any())).thenReturn(0L);
         when(reactionRepo.countByPostId(any())).thenReturn(0L);
-        when(postMapper.toResponse(post1,0,0)).thenReturn(resp1);
-        when(postMapper.toResponse(post2,0,0)).thenReturn(resp2);
+        when(postMapper.toResponse(post1, 0, 0)).thenReturn(resp1);
+        when(postMapper.toResponse(post2, 0, 0)).thenReturn(resp2);
 
-        List<PostResponse> results = postService.getPublicPosts();
+        Page<PostResponse> results = postService.getPublicPosts(0, 10);
 
-        assertEquals(2, results.size());
-        assertEquals(resp1, results.get(0));
-        assertEquals(resp2, results.get(1));
+        assertEquals(2, results.getContent().size());
+        assertEquals(resp1, results.getContent().get(0));
+        assertEquals(resp2, results.getContent().get(1));
     }
+
 
     @Test
     void testGetById_Found() {

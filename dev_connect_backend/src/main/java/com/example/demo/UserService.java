@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo;
 
 import com.example.demo.dto.profile.UpdateProfileRequest;
 import com.example.demo.dto.profile.UserProfileRequest;

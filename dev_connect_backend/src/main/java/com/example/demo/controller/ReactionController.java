@@ -4,7 +4,7 @@ import com.example.demo.dto.reaction.ReactionRequest;
 import com.example.demo.dto.reaction.ReactionResponse;
 import com.example.demo.dto.reaction.ReactionSummary;
 import com.example.demo.model.UserPrincipal;
-import com.example.demo.service.reaction.ReactionService;
+import com.example.demo.reaction.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

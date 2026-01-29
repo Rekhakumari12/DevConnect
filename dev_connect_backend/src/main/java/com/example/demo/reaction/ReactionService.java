@@ -1,4 +1,4 @@
-package com.example.demo.service.reaction;
+package com.example.demo.reaction;
 
 import com.example.demo.dto.reaction.ReactionResponse;
 import com.example.demo.dto.reaction.ReactionSummary;
@@ -11,8 +11,8 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.ReactionRepository;
-import com.example.demo.service.UserService;
-import com.example.demo.service.post.PostService;
+import com.example.demo.UserService;
+import com.example.demo.post.PostService;
 import com.example.demo.utils.ReactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
