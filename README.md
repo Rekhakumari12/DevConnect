@@ -12,7 +12,7 @@ Authentication: JWT
 API Style: REST 
 
 -------------------------
-SETUP INSTRUCTIONS
+LOCAL SETUP 
 -------------------------
 Clone the repository.
 
@@ -36,17 +36,39 @@ Create a PostgreSQL database.
 CREATE DATABASE dev_connect;
 ```
 
-Update application.yml or application.properties with database credentials.
+Update application.properties with database credentials.
 ```bash
 spring.datasource.url=jdbc:postgresql://localhost:5432/dev_connect
 spring.datasource.username=postgres
 spring.datasource.password=your_password
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-
 ```
+-------------------------
+Run Using Docker 
+-------------------------
+Clone the repository.
+
+```bash
+git clone https://github.com/rekhakumari12/DevConnect.git
+cd cd dev-connect
+```
+Create .env file in the project root with the required variables:
+```bash
+POSTGRES_DB=dev_connect
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/dev_connect
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=postgres
+JWT_SECRET=someSecretKey
+```
+Run Docker Compose:
+```bash
+docker-compose up --build
+```
+
 The server will start on http://localhost:8080.
+
 
 -------------------------
 API Endpoints
@@ -58,8 +80,8 @@ For user management, these endpoints handle registration, login, profile access,
 ```bash
 POST   /api/auth/register
 POST   /api/auth/login
-GET    /api/users/me
-PUT    /api/users/me
+GET    /api/users/my-profile
+PUT    /api/users/my-profile
 ```
 For project ideas (posts), these endpoints allow authenticated users to create and manage project ideas. A post contains title, description, techStack, and visibility (PUBLIC or PRIVATE). Any user can view all public posts. A logged-in user can view all their own posts, including private ones. Only the owner of a post can update or delete it. Each post automatically stores createdAt and updatedAt timestamps.
 
@@ -67,7 +89,7 @@ For project ideas (posts), these endpoints allow authenticated users to create a
 ```bash
 POST   /api/posts
 GET    /api/posts/public
-GET    /api/posts/me
+GET    /api/posts/my-post
 PUT    /api/posts/{postId}
 DELETE /api/posts/{postId}
 ```
