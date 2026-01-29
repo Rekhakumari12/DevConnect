@@ -105,13 +105,11 @@ public class PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
     }
 
-    public boolean checkPrivatePost(UUID postId) {
+    public void checkPrivatePost(UUID postId) {
         Post post = getById(postId);
         if (post.getVisibility() == PostVisibility.PRIVATE) {
             throw new AccessDeniedException("Access Denied");
         }
-        return true;
     }
-
 
 }
