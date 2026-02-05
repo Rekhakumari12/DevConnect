@@ -1,37 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { passwordMatcherValidator } from '../validators/password-validator';
 import { FormFieldErrors } from '../common/form-field-errors/form-field-errors';
+import { AuthService, RegisterRequest } from '../auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, FormFieldErrors],
+  imports: [ReactiveFormsModule, FormFieldErrors, CommonModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
-export class Register {
+export class Register implements OnInit {
   registerForm!: FormGroup;
+  serverError: string | null = null;
 
-  // Dependency Injection:
-  // - FormBuilder: A service that provides convenience methods for generating controls.
-  // - Router: Used for navigating the user after successful registration.
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
+    private readonly authService: AuthService,
+  ) {}
 
   ngOnInit(): void {
-    this.fb.group(
+    this.registerForm = this.fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(4)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
-        skills: [''],
+        skills: ['', [Validators.required]],
         bio: [''],
       },
       {
-        //Group Validator: Applied to the FormGroup to check cross-field consistency
         validators: passwordMatcherValidator,
-      }
+      },
     );
   }
 
@@ -40,6 +43,32 @@ export class Register {
   }
 
   onSubmit() {
-    console.log('object');
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    const value = this.registerForm.value;
+    const payload: RegisterRequest = {
+      username: value.username,
+      email: value.email,
+      password: value.password,
+      skills: value.skills
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter((s: string) => !!s),
+      bio: value.bio || undefined,
+    };
+
+    this.serverError = null;
+    this.authService.register(payload).subscribe({
+      next: () => {
+        // Auto-signed in by cookie; navigate to home
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        this.serverError = err.error?.message || 'Registration failed. Please check your details.';
+      },
+    });
   }
 }

@@ -12,9 +12,8 @@
           placeholder="Choose a unique username"
           required
         />
-        <app-form-field-errors [control]="f[]"></app-form-field-errors>
+        <app-form-field-errors [control]="f['username']"></app-form-field-errors>
       </div>
-
 
       <div class="form-group">
         <label for="email">Email</label>
@@ -25,7 +24,7 @@
           placeholder="Enter your email address"
           required
         />
-
+        <app-form-field-errors [control]="f['email']"></app-form-field-errors>
       </div>
 
       <div class="form-group">
@@ -37,6 +36,7 @@
           placeholder="Create a strong password"
           required
         />
+        <app-form-field-errors [control]="f['password']"></app-form-field-errors>
       </div>
 
       <div class="form-group">
@@ -48,7 +48,32 @@
           placeholder="Re-enter your password"
           required
         />
+        <app-form-field-errors [control]="f['confirmPassword']"></app-form-field-errors>
       </div>
+
+      <div class="form-group">
+        <label for="skills">Skills (comma-separated)</label>
+        <input
+          formControlName="skills"
+          type="text"
+          id="skills"
+          placeholder="e.g., Java, Spring Boot, Angular"
+          required
+        />
+        <app-form-field-errors [control]="f['skills']"></app-form-field-errors>
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Bio (optional)</label>
+        <textarea
+          formControlName="bio"
+          id="bio"
+          rows="3"
+          placeholder="Tell us about yourself"
+        ></textarea>
+      </div>
+
+      <div *ngIf="serverError" class="error-summary">{{ serverError }}</div>
 
       <button type="submit" class="btn btn-primary btn-full-width">Register</button>
     </form>
