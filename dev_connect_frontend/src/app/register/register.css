@@ -1,0 +1,103 @@
+/* 1. Page Container & Centering */
+.register-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background-page);
+  padding: 2rem;
+}
+
+/* 2. The Login/Register Card */
+.auth-card {
+  background-color: var(--background-light);
+  padding: 3rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px var(--shadow-color);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* 3. Branding/Headers */
+
+.auth-card h2 {
+  font-size: 1.5rem;
+  color: var(--text-color-dark);
+  margin-bottom: 1.5rem;
+}
+
+/* 4. Form Groups and Inputs */
+.register-form {
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-color-dark);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box; 
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: var(--input-focus-border-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* 5. Primary Button */
+.btn {
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
+  border: 1px solid var(--primary-color);
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btn-full-width {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* 6. Footer Link */
+.auth-footer {
+  margin-top: 1.5rem;
+  color: var(--text-color-muted);
+  font-size: 0.95rem;
+}
+
+.auth-link {
+  color: var(--text-color-link);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  color: var(--text-color-link-hover);
+  text-decoration: underline;
+}

@@ -1,0 +1,42 @@
+:root {
+  /* Primary Colors */
+  --primary-color: #28a745; /* A vibrant green for main actions (e.g., New Idea button, Login button) */
+  --primary-dark: #218838;  /* Slightly darker primary for hover/active states */
+  --primary-light: #e6f7ea; /* A very light tint of primary for subtle backgrounds or accents */
+
+  /* Secondary Colors (for header/sidebar backgrounds) */
+  --secondary-dark: #212936; /* Dark background for the main header and sidebar */
+  --secondary-medium: #343a40; /* Slightly lighter dark for active states in sidebar, or subtle separators */
+
+  /* Text Colors */
+  --text-color-light: #f8f9fa; /* Light text for dark backgrounds (e.g., header, sidebar) */
+  --text-color-dark: #343a40;  /* Dark text for light backgrounds (e.g., main content) */
+  --text-color-muted: #6c757d; /* Lighter grey for secondary text (e.g., timestamps, descriptions) */
+  --text-color-link: #007bff; /* Standard blue for clickable links */
+  --text-color-link-hover: #0056b3; /* Darker blue for link hover */
+
+  /* Background Colors */
+  --background-light: #ffffff; /* White background for cards, forms, main content area */
+  --background-page: #f0f2f5;   /* Light grey for the overall page background (subtle pattern if desired) */
+
+  /* Border & Shadow Colors */
+  --border-color: #dee2e6; /* Light grey for subtle borders, separators */
+  --shadow-color: rgba(0, 0, 0, 0.08); /* Subtle shadow for cards, elements */
+
+  /* Status Colors (optional, for messages like success/error) */
+  --success-color: #28a745; /* Same as primary, or a distinct green */
+  --error-color: #dc3545;   /* Red for error messages */
+  --warning-color: #ffc107; /* Yellow for warnings */
+
+  /* Other specific elements */
+  --input-border-color: #ced4da; /* Border for input fields */
+  --input-focus-border-color: #80bdff; /* Blue border on input focus */
+}
+
+body {
+  font-family: Arial, sans-serif; 
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-page); 
+  color: var(--text-color-dark);
+}

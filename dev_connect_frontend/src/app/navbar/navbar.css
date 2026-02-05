@@ -1,0 +1,178 @@
+/* Container for the entire navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--secondary-dark); 
+  color: var(--text-color-light); 
+  box-shadow: 0 2px 4px var(--shadow-color);
+  width: 100%;
+  box-sizing: border-box; 
+  z-index: 1000; 
+}
+
+/* Left Section: Logo */
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand {
+  color: var(--text-color-light);
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-code::before {
+  content: '</>'; 
+  font-size: 1.2em;
+  color: var(--primary-color);
+}
+
+/* Center Section: Search Bar */
+.navbar-center {
+  flex-grow: 1; /* Allows it to take up available space */
+  display: flex;
+  justify-content: center;
+  margin: 0 2rem; 
+}
+
+.search-bar {
+  position: relative;
+  width: 100%; 
+  max-width: 500px;
+}
+
+.search-input {
+  width: calc(100% - 2.5rem); /* Adjust for icon */
+  padding: 0.75rem 1rem 0.75rem 2.5rem; /* Left padding for icon */
+  border: none;
+  border-radius: 25px; 
+  background-color: var(--secondary-medium);
+  color: var(--text-color-light);
+  font-size: 1rem;
+}
+
+.search-input::placeholder {
+  color: var(--text-color-muted);
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-color-muted);
+  pointer-events: none; 
+}
+
+/* Right Section: Nav Links & User Actions */
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navbar-nav li {
+  margin-left: 1.5rem;
+  position: relative; /* For dropdown */
+}
+
+.nav-link {
+  color: var(--text-color-light);
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+/* User Dropdown Toggle (Circle with initial) */
+.dropdown-toggle {
+  background-color: var(--primary-color);
+  width: 40px;
+  height: 23px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%; 
+  right: 0;
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  min-width: 160px;
+  z-index: 1001; 
+  display: none; 
+  flex-direction: column;
+  margin-top: 10px; 
+  overflow: hidden; 
+  cursor: default;
+}
+
+.dropdown-menu.show {
+  display: flex; 
+}
+
+.dropdown-item {
+  color: var(--text-color-dark);
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--background-page);
+  color: var(--primary-color); 
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0.5rem 0;
+}
+
+/* Dropdown backdrop for closing on outside click */
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999; /* Below dropdown menu, above other content */
+}

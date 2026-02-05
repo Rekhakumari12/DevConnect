@@ -36,12 +36,12 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
         String token = null;
         String usernameFromToken = null;
-        // Skip login endpoint
+        // Skip public endpoints
         String path = request.getServletPath();
         if (path.startsWith("/auth/login")
+                || path.startsWith("/auth/logout")
                 || path.startsWith("/api/users/register")
                 || path.startsWith("/api/posts/public")
                 || path.startsWith("/api/search")) {
@@ -49,8 +49,8 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-             token = authHeader.substring(7);
+        token = resolveToken(request);
+        if (token != null) {
             usernameFromToken = jwtUtil.extractUsername(token);
         }
 
@@ -68,5 +68,23 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String resolveToken(HttpServletRequest request) {
+        // Prefer cookie-based token for session semantics
+        if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                if ("DEVCONNECT_JWT".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        // (Optional) Fallback to Authorization header for compatibility
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }

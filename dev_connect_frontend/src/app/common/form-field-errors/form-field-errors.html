@@ -1,0 +1,16 @@
+<div *ngIf="control && control.invalid && (control.dirty || control.touched)" class="error-messages">
+  <ng-container *ngIf="control.errors as errors">
+    <div *ngIf="errors['required']" class="error-message">
+      This field is required.
+    </div>
+    <div *ngIf="errors['minlength']" class="error-message">
+      Must be at least {{errors['minlength']?.requiredLength}} characters.
+    </div>
+    <div *ngIf="errors['email']" class="error-message">
+      Please enter a valid email address.
+    </div>
+    <div *ngIf="errors['passwordMismatch']" class="error-message">
+      Password do not match.
+    </div>
+  </ng-container>
+</div>

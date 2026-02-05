@@ -3,7 +3,10 @@ package com.example.demo.controller;
 import com.example.demo.dto.login.LoginRequest;
 import com.example.demo.dto.login.LoginResponse;
 import com.example.demo.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +18,35 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest,
+                                               HttpServletResponse response) {
         String token = authService.verify(loginRequest);
-        return ResponseEntity.ok(new LoginResponse(token));
+
+        ResponseCookie cookie = ResponseCookie.from("DEVCONNECT_JWT", token)
+                .httpOnly(true)
+                .secure(false) // TODO: true behind HTTPS
+                .sameSite("Lax")
+                .path("/")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        // Do NOT return the token in the body
+        return ResponseEntity.ok(new LoginResponse(null));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("DEVCONNECT_JWT", "")
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.noContent().build();
     }
 
 }
