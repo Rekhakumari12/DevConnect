@@ -743,7 +743,7 @@ Technical details and Assumptions:
 
 - [ ] Users can register with username, email, password, and at least one skill, seeing clear client- and server-side validation messaging.
 - [ ] After successful registration, the user is automatically signed in (cookie set) and redirected to the public feed.
-- [x] Users can log in with username plus password, and a secure httpOnly JWT cookie is set on success.
+- [ ] Users can log in with username plus password, and a secure httpOnly JWT cookie is set on success.
 - [ ] Refreshing the page while the JWT is valid keeps the user signed in; navbar and guarded routes behave accordingly.
-- [x] When the session expires or cookie is invalid, protected routes redirect to login and the navbar shows the signed-out state.
-- [x] Logout from the navbar clears the cookie on the backend, resets frontend state, and returns the user to a public view (feed).
+- [ ] When the session expires or cookie is invalid, protected routes redirect to login and the navbar shows the signed-out state.
+- [ ] Logout from the navbar clears the cookie on the backend, resets frontend state, and returns the user to a public view (feed).

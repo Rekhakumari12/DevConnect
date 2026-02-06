@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.profile.PublicUserProfileResponse;
 import com.example.demo.dto.profile.UpdateProfileRequest;
 import com.example.demo.dto.profile.UserProfileRequest;
 import com.example.demo.dto.profile.UserProfileResponse;
@@ -48,12 +49,12 @@ public class UserController {
 
     @GetMapping("/my-profile")
     public ResponseEntity<UserProfileResponse> getMyProfile(Principal principal) {
-        return ResponseEntity.ok(userService.getProfileByUsername(principal.getName()));
+        return ResponseEntity.ok(userService.getProfileByUsernameForOwner(principal.getName()));
     }
 
     @GetMapping("")
-    public ResponseEntity<UserProfileResponse> getProfileByUsername(@RequestParam String username) {
-        return ResponseEntity.ok(userService.getProfileByUsername(username));
+    public ResponseEntity<PublicUserProfileResponse> getProfileByUsername(@RequestParam String username) {
+        return ResponseEntity.ok(userService.getPublicProfileByUsername(username));
     }
 
     @PutMapping("/my-profile")

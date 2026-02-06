@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.UserService;
+import com.example.demo.dto.profile.PublicUserProfileResponse;
 import com.example.demo.dto.profile.UpdateProfileRequest;
 import com.example.demo.dto.profile.UserProfileRequest;
 import com.example.demo.dto.profile.UserProfileResponse;
@@ -67,7 +68,7 @@ class UserServiceTest {
 
         when(userRepo.findByUsername("john")).thenReturn(Optional.of(user));
 
-        UserProfileResponse response = userService.getProfileByUsername("john");
+        UserProfileResponse response = userService.getProfileByUsernameForOwner("john");
 
         assertEquals("john", response.username());
     }
@@ -77,7 +78,35 @@ class UserServiceTest {
         when(userRepo.findByUsername("john")).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class,
-                () -> userService.getProfileByUsername("john"));
+                () -> userService.getProfileByUsernameForOwner("john"));
+    }
+
+    @Test
+    void testGetPublicProfileByUsername_Success() {
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setUsername("john");
+        user.setEmail("john@example.com");
+        user.setSkills(List.of("Java"));
+        user.setBio("Developer");
+
+        when(userRepo.findByUsername("john")).thenReturn(Optional.of(user));
+
+        PublicUserProfileResponse response = userService.getPublicProfileByUsername("john");
+
+        assertEquals("john", response.username());
+        assertEquals(List.of("Java"), response.skills());
+        assertEquals("Developer", response.bio());
+        // Verify email is NOT included in public profile
+        assertNotNull(response.id());
+    }
+
+    @Test
+    void testGetPublicProfileByUsername_NotFound() {
+        when(userRepo.findByUsername("john")).thenReturn(Optional.empty());
+
+        assertThrows(UsernameNotFoundException.class,
+                () -> userService.getPublicProfileByUsername("john"));
     }
 
     @Test
@@ -103,12 +132,52 @@ class UserServiceTest {
 
         UserProfileResponse response = userService.updateProfile(request, userId);
 
-        assertEquals("new", response.username());
-        assertEquals("new@email.com", response.email());
+        // Username and email should NOT change
+        assertEquals("old", response.username());
+        assertEquals("old@email.com", response.email());
+        // Skills and bio should change
         assertEquals("new bio", response.bio());
         assertEquals(List.of("Java", "Spring"), response.skills());
 
         verify(userRepo).save(user);
+    }
+
+    @Test
+    void testUpdateProfile_OnlySkillsAndBioModified() {
+        UUID userId = UUID.randomUUID();
+
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("original");
+        user.setEmail("original@email.com");
+        user.setBio("original bio");
+        user.setSkills(List.of("Java"));
+
+        // Request contains new username and email but they should be ignored
+        UpdateProfileRequest request = new UpdateProfileRequest(
+                "hacker@evil.com",
+                "hacker",
+                List.of("Python"),
+                "Updated bio"
+        );
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepo.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserProfileResponse response = userService.updateProfile(request, userId);
+
+        // Verify username and email were NOT modified
+        assertEquals("original", response.username());
+        assertEquals("original@email.com", response.email());
+        // Verify only skills and bio were updated
+        assertEquals(List.of("Python"), response.skills());
+        assertEquals("Updated bio", response.bio());
+
+        // Verify the saved user still has original username and email
+        assertEquals("original", user.getUsername());
+        assertEquals("original@email.com", user.getEmail());
+        assertEquals(List.of("Python"), user.getSkills());
+        assertEquals("Updated bio", user.getBio());
     }
 
     @Test

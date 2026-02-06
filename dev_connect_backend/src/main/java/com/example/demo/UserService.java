@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.dto.profile.PublicUserProfileResponse;
 import com.example.demo.dto.profile.UpdateProfileRequest;
 import com.example.demo.dto.profile.UserProfileRequest;
 import com.example.demo.dto.profile.UserProfileResponse;
@@ -36,19 +37,26 @@ public class UserService {
         return new UserProfileResponse(user);
     }
 
-    public UserProfileResponse getProfileByUsername(String username) {
+    public UserProfileResponse getProfileByUsernameForOwner(String username) {
         User user = getByUsername(username);
         return new UserProfileResponse(user);
     }
 
-    public UserProfileResponse updateProfile(UpdateProfileRequest req, UUID userId) {
+    public PublicUserProfileResponse getPublicProfileByUsername(String username) {
+        User user = getByUsername(username);
+        return new PublicUserProfileResponse(user);
+    }
 
+    public UserProfileResponse updateProfile(UpdateProfileRequest req, UUID userId) {
         User user = getById(userId);
 
-        if (req.email() != null) user.setEmail(req.email());
-        if (req.username() != null) user.setUsername(req.username());
-        if (req.skills() != null) user.setSkills(req.skills());
-        if (req.bio() != null) user.setBio(req.bio());
+        // Only allow updating skills and bio; ignore username and email
+        if (req.skills() != null) {
+            user.setSkills(req.skills());
+        }
+        if (req.bio() != null) {
+            user.setBio(req.bio());
+        }
 
         userRepo.save(user);
         return new UserProfileResponse(user);
