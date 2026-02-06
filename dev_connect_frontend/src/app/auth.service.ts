@@ -15,6 +15,26 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  skills: string[];
+  bio?: string;
+}
+
+export interface PublicUserProfile {
+  id: string;
+  username: string;
+  skills: string[];
+  bio?: string;
+}
+
+export interface UpdateProfileRequest {
+  skills: string[];
+  bio?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   // Temporary: Use direct backend URL until proxy is fixed
@@ -45,9 +65,21 @@ export class AuthService {
     );
   }
 
-  getMyProfile(): Observable<any> {
-    return this.http.get(`${this.API_BASE}/users/my-profile`, {
+  getMyProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.API_BASE}/users/my-profile`, {
       withCredentials: true,
+    });
+  }
+
+  updateMyProfile(update: UpdateProfileRequest): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${this.API_BASE}/users/my-profile`, update, {
+      withCredentials: true,
+    });
+  }
+
+  getPublicProfile(username: string): Observable<PublicUserProfile> {
+    return this.http.get<PublicUserProfile>(`${this.API_BASE}/users`, {
+      params: { username },
     });
   }
 }
