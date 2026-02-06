@@ -23,7 +23,7 @@ export class Login {
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
@@ -44,7 +44,7 @@ export class Login {
     this.authService.login({ username, password }).subscribe({
       next: () => {
         console.log('Login successful, navigating to home');
-        this.router.navigate(['/']);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Login failed:', err);

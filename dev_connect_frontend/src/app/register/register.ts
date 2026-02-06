@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { passwordMatcherValidator } from '../validators/password-validator';
 import { FormFieldErrors } from '../common/form-field-errors/form-field-errors';
 import { AuthService, RegisterRequest } from '../auth.service';
@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, FormFieldErrors, CommonModule],
+  imports: [ReactiveFormsModule, FormFieldErrors, CommonModule, RouterModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -64,7 +64,7 @@ export class Register implements OnInit {
     this.authService.register(payload).subscribe({
       next: () => {
         // Auto-signed in by cookie; navigate to home
-        this.router.navigate(['/']);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         this.serverError = err.error?.message || 'Registration failed. Please check your details.';
