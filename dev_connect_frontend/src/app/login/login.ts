@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth.service';
+import { AuthStateService } from '../auth-state.service';
 import { FormFieldErrors } from '../common/form-field-errors/form-field-errors';
 
 @Component({
@@ -20,6 +21,7 @@ export class Login {
     private readonly fb: FormBuilder,
     private readonly router: Router,
     private readonly authService: AuthService,
+    private readonly authState: AuthStateService,
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
@@ -43,7 +45,9 @@ export class Login {
 
     this.authService.login({ username, password }).subscribe({
       next: () => {
-        console.log('Login successful, navigating to home');
+        console.log('Login successful, updating auth state');
+        // Update auth state immediately so guard allows navigation
+        this.authState.setAuthenticated(username);
         this.router.navigate(['/home']);
       },
       error: (err) => {

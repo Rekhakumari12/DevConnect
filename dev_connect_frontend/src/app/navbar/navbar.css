@@ -176,3 +176,21 @@
   bottom: 0;
   z-index: 999; /* Below dropdown menu, above other content */
 }
+
+/* Guest Links Styling */
+.navbar-right .nav-link {
+  margin-left: 1.5rem;
+}
+
+.nav-link-register {
+  background-color: var(--primary-color);
+  padding: 0.5rem 1.25rem;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link-register:hover {
+  background-color: var(--primary-dark);
+  color: var(--text-color-light);
+}

@@ -3,7 +3,7 @@
     <a routerLink="/" class="navbar-brand"> <span class="icon-code"></span> DevConnect </a>
   </div>
 
-  <ng-container *ngIf="isAuthenticated">
+  <ng-container *ngIf="isAuthenticated; else guestLinks">
     <div class="navbar-center">
       <div class="search-bar">
         <input
@@ -19,22 +19,29 @@
       <ul class="navbar-nav">
         <li><a routerLink="/home" class="nav-link">Home</a></li>
         <li><a routerLink="/browse-ideas" class="nav-link">Browse Ideas</a></li>
-          <li class="nav-item dropdown" (click)="toggleDropdown()">
-            <span class="nav-link dropdown-toggle">{{
-              username ? username[0].toUpperCase() : 'A'
-            }}</span>
-            <div class="dropdown-menu" [class.show]="isDropdownOpen">
-              <a routerLink="/profile" class="dropdown-item" (click)="navigateTo('/profile')"
-                >Profile</a
-              >
-              <a routerLink="/settings" class="dropdown-item" (click)="navigateTo('/settings')"
-                >Settings</a
-              >
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" (click)="onLogout()">Logout</a>
-            </div>
-          </li>
+        <li class="nav-item dropdown" (click)="toggleDropdown()">
+          <span class="nav-link dropdown-toggle">{{
+            username ? username[0].toUpperCase() : 'A'
+          }}</span>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <a routerLink="/profile" class="dropdown-item" (click)="navigateTo('/profile')"
+              >Profile</a
+            >
+            <a routerLink="/settings" class="dropdown-item" (click)="navigateTo('/settings')"
+              >Settings</a
+            >
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="onLogout()">Logout</a>
+          </div>
+        </li>
       </ul>
     </div>
   </ng-container>
+
+  <ng-template #guestLinks>
+    <div class="navbar-right">
+      <a routerLink="/login" class="nav-link">Login</a>
+      <a routerLink="/register" class="nav-link nav-link-register">Register</a>
+    </div>
+  </ng-template>
 </nav>

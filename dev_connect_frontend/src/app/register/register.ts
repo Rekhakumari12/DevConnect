@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { passwordMatcherValidator } from '../validators/password-validator';
 import { FormFieldErrors } from '../common/form-field-errors/form-field-errors';
 import { AuthService, RegisterRequest } from '../auth.service';
+import { AuthStateService } from '../auth-state.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -20,6 +21,7 @@ export class Register implements OnInit {
     private readonly fb: FormBuilder,
     private readonly router: Router,
     private readonly authService: AuthService,
+    private readonly authState: AuthStateService,
   ) {}
 
   ngOnInit(): void {
@@ -63,7 +65,9 @@ export class Register implements OnInit {
     this.serverError = null;
     this.authService.register(payload).subscribe({
       next: () => {
-        // Auto-signed in by cookie; navigate to home
+        console.log('Registration successful, updating auth state');
+        // Auto-signed in by cookie; update auth state and navigate to home
+        this.authState.setAuthenticated(payload.username);
         this.router.navigate(['/home']);
       },
       error: (err) => {
