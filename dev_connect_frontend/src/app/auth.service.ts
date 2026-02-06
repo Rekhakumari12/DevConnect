@@ -17,7 +17,9 @@ export interface LoginRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API_BASE = '/api';
+  // Temporary: Use direct backend URL until proxy is fixed
+  private readonly API_BASE = 'http://localhost:8080/api';
+  private readonly AUTH_BASE = 'http://localhost:8080/auth';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -28,14 +30,14 @@ export class AuthService {
   }
 
   login(payload: LoginRequest): Observable<any> {
-    return this.http.post('/auth/login', payload, {
+    return this.http.post(`${this.AUTH_BASE}/login`, payload, {
       withCredentials: true,
     });
   }
 
   logout(): Observable<void> {
     return this.http.post<void>(
-      '/auth/logout',
+      `${this.AUTH_BASE}/logout`,
       {},
       {
         withCredentials: true,

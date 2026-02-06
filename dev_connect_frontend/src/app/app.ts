@@ -27,8 +27,8 @@ export class App implements OnInit {
       (user) => (this.loggedInUsername = user?.username ?? null),
     );
 
-    // Initialize auth state from server-side session when app loads
-    this.authState.initFromSession();
+    // Auth state is already initialized via APP_INITIALIZER
+    // No need to call initFromSession() here
   }
 
   onUserLogout(): void {
