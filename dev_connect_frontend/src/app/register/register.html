@@ -75,7 +75,13 @@
 
       <div *ngIf="serverError" class="error-summary">{{ serverError }}</div>
 
-      <button type="submit" class="btn btn-primary btn-full-width">Register</button>
+      <button
+        type="submit"
+        class="btn btn-primary btn-full-width"
+        [disabled]="isLoading || registerForm.invalid"
+      >
+        {{ isLoading ? 'Creating account...' : 'Register' }}
+      </button>
     </form>
 
     <div class="auth-footer">

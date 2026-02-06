@@ -29,7 +29,13 @@
 
       <div *ngIf="authError" class="error-summary">{{ authError }}</div>
 
-      <button type="submit" class="btn btn-primary btn-full-width">Login</button>
+      <button
+        type="submit"
+        class="btn btn-primary btn-full-width"
+        [disabled]="isLoading || loginForm.invalid"
+      >
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
     </form>
 
     <div class="auth-footer">

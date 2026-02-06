@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 export class Register implements OnInit {
   registerForm!: FormGroup;
   serverError: string | null = null;
+  isLoading: boolean = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -63,6 +64,7 @@ export class Register implements OnInit {
     };
 
     this.serverError = null;
+    this.isLoading = true;
     this.authService.register(payload).subscribe({
       next: () => {
         console.log('Registration successful, updating auth state');
@@ -71,7 +73,13 @@ export class Register implements OnInit {
         this.router.navigate(['/home']);
       },
       error: (err) => {
-        this.serverError = err.error?.message || 'Registration failed. Please check your details.';
+        this.isLoading = false;
+        if (err.status === 0) {
+          this.serverError = 'Unable to connect to server. Please check your connection.';
+        } else {
+          this.serverError =
+            err.error?.message || 'Registration failed. Please check your details.';
+        }
       },
     });
   }

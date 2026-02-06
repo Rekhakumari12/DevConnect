@@ -16,6 +16,7 @@ import { FormFieldErrors } from '../common/form-field-errors/form-field-errors';
 export class Login {
   loginForm: FormGroup;
   authError: string | null = null;
+  isLoading: boolean = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -41,6 +42,7 @@ export class Login {
       return;
     }
 
+    this.isLoading = true;
     const { username, password } = this.loginForm.value;
 
     this.authService.login({ username, password }).subscribe({
@@ -51,11 +53,14 @@ export class Login {
         this.router.navigate(['/home']);
       },
       error: (err) => {
+        this.isLoading = false;
         console.error('Login failed:', err);
         if (err.status === 401) {
           this.authError = 'Invalid username or password';
         } else if (err.error?.message) {
           this.authError = err.error.message;
+        } else if (err.status === 0) {
+          this.authError = 'Unable to connect to server. Please check your connection.';
         } else {
           this.authError = 'An unexpected error occurred. Please try again.';
         }
