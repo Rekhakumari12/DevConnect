@@ -1,0 +1,72 @@
+<div class="browse-container">
+  <div class="browse-header">
+    <h1>Browse Ideas</h1>
+    <p *ngIf="searchQuery" class="search-info">
+      Searching for: <strong>{{ searchQuery }}</strong>
+    </p>
+    <p *ngIf="techStack" class="filter-info">
+      Filtered by: <strong>{{ techStack }}</strong>
+    </p>
+  </div>
+
+  <div class="content" *ngIf="!isLoading && !errorMessage">
+    <!-- Users Section -->
+    <div class="users-section" *ngIf="users.length > 0">
+      <h2>Developers</h2>
+      <div class="users-list">
+        <a *ngFor="let user of users" [routerLink]="['/profile', user.username]" class="user-card">
+          <div class="user-avatar">{{ user.username[0].toUpperCase() }}</div>
+          <div class="user-info">
+            <h3>{{ user.username }}</h3>
+            <p class="user-skills" *ngIf="user.skills && user.skills.length > 0">
+              {{ user.skills.join(', ') }}
+            </p>
+            <p class="user-bio" *ngIf="user.bio">{{ user.bio }}</p>
+          </div>
+          <div class="view-profile-icon">→</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Posts Section -->
+    <div class="posts-section" *ngIf="posts.length > 0 || searchQuery || techStack">
+      <h2 *ngIf="users.length > 0">Posts</h2>
+      <div class="no-posts" *ngIf="posts.length === 0">
+        <h3>No posts found</h3>
+        <p *ngIf="searchQuery || techStack">Try adjusting your search or filter criteria.</p>
+        <p *ngIf="!searchQuery && !techStack">Be the first to create a post!</p>
+      </div>
+
+      <div class="posts-list" *ngIf="posts.length > 0">
+        <div class="post-card" *ngFor="let post of posts">
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.content }}</p>
+          <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+            <span class="tag" *ngFor="let tag of post.tags">{{ tag }}</span>
+          </div>
+          <div class="post-meta">
+            <span class="author" *ngIf="post.username">By {{ post.username }}</span>
+            <span class="date">{{ post.createdAt | date: 'short' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State when nothing is searched -->
+    <div
+      class="no-results"
+      *ngIf="users.length === 0 && posts.length === 0 && !searchQuery && !techStack"
+    >
+      <h2>Start Exploring</h2>
+      <p>Use the search bar or tech stack filter above to find developers and posts.</p>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading posts...</p>
+  </div>
+
+  <div class="error" *ngIf="errorMessage">
+    <p>{{ errorMessage }}</p>
+  </div>
+</div>

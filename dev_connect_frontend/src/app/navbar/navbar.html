@@ -5,13 +5,28 @@
 
   <ng-container *ngIf="isAuthenticated; else guestLinks">
     <div class="navbar-center">
+      <!-- Tech Stack Filter -->
+      <div class="tech-stack-filter">
+        <select
+          [(ngModel)]="selectedTechStack"
+          (change)="onTechStackFilter()"
+          class="tech-filter-select"
+        >
+          <option value="">All Tech Stacks</option>
+          <option *ngFor="let tech of techStacks" [value]="tech">{{ tech }}</option>
+        </select>
+      </div>
+
+      <!-- Independent Search Bar -->
       <div class="search-bar">
         <input
           type="text"
-          placeholder="Search project ideas, users, tech..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          placeholder="Search by title, username, description..."
           class="search-input"
         />
-        <span class="search-icon">🔍</span>
+        <button (click)="onSearch()" class="search-button">🔍</button>
       </div>
     </div>
 

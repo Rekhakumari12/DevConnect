@@ -35,6 +35,23 @@ export interface UpdateProfileRequest {
   bio?: string;
 }
 
+export interface Post {
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  visibility: string;
+  createdAt: string;
+  username?: string;
+}
+
+export interface PostsResponse {
+  content: Post[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   // Temporary: Use direct backend URL until proxy is fixed
@@ -80,6 +97,28 @@ export class AuthService {
   getPublicProfile(username: string): Observable<PublicUserProfile> {
     return this.http.get<PublicUserProfile>(`${this.API_BASE}/users`, {
       params: { username },
+    });
+  }
+
+  getUserPublicPosts(
+    username: string,
+    page: number = 0,
+    size: number = 10,
+  ): Observable<PostsResponse> {
+    return this.http.get<PostsResponse>(`${this.API_BASE}/posts`, {
+      params: { username, page: page.toString(), size: size.toString() },
+    });
+  }
+
+  getPublicPosts(page: number = 0, size: number = 20): Observable<PostsResponse> {
+    return this.http.get<PostsResponse>(`${this.API_BASE}/posts/public`, {
+      params: { page: page.toString(), size: size.toString() },
+    });
+  }
+
+  searchPosts(keyword: string, page: number = 0, size: number = 20): Observable<PostsResponse> {
+    return this.http.get<PostsResponse>(`${this.API_BASE}/search`, {
+      params: { keyword, page: page.toString(), size: size.toString() },
     });
   }
 }

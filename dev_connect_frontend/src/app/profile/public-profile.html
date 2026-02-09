@@ -1,0 +1,73 @@
+<div class="profile-page">
+  <div class="profile-container" *ngIf="!isLoading; else loadingTpl">
+    <ng-container *ngIf="profile; else errorTpl">
+      <div class="profile-header">
+        <div class="avatar">{{ profile.username[0].toUpperCase() }}</div>
+        <div class="profile-info">
+          <h1>{{ profile.username }}</h1>
+          <p class="subtitle">Public Profile</p>
+        </div>
+      </div>
+
+      <div class="profile-content">
+        <div class="profile-section">
+          <h2>Skills</h2>
+          <div *ngIf="profile.skills && profile.skills.length > 0; else noSkills">
+            <ul class="skills-list">
+              <li *ngFor="let skill of profile.skills" class="skill-tag">{{ skill }}</li>
+            </ul>
+          </div>
+          <ng-template #noSkills>
+            <p class="empty-state">No skills listed yet.</p>
+          </ng-template>
+        </div>
+
+        <div class="profile-section">
+          <h2>Bio</h2>
+          <p class="bio-text" *ngIf="profile.bio; else noBio">{{ profile.bio }}</p>
+          <ng-template #noBio>
+            <p class="empty-state">No bio provided yet.</p>
+          </ng-template>
+        </div>
+
+        <!-- User's Public Posts -->
+        <div class="profile-section posts-section">
+          <h2>Posts</h2>
+          <div *ngIf="isLoadingPosts" class="posts-loading">
+            <p>Loading posts...</p>
+          </div>
+          <div *ngIf="!isLoadingPosts && posts.length > 0" class="posts-list">
+            <div *ngFor="let post of posts" class="post-card">
+              <h3 class="post-title">{{ post.title }}</h3>
+              <p class="post-content">{{ post.content }}</p>
+              <div class="post-meta">
+                <span class="post-date">{{ post.createdAt | date: 'MMM d, y' }}</span>
+                <div class="post-tags">
+                  <span *ngFor="let tag of post.tags" class="tag">{{ tag }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!isLoadingPosts && posts.length === 0" class="empty-state">
+            <p>No public posts yet.</p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #errorTpl>
+      <div class="error-container">
+        <div class="error-icon">⚠️</div>
+        <p class="error-message">{{ error }}</p>
+        <a routerLink="/" class="btn-secondary">Go to Home</a>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading profile...</p>
+    </div>
+  </ng-template>
+</div>

@@ -31,8 +31,8 @@ public class AuthController {
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        // Do NOT return the token in the body
-        return ResponseEntity.ok(new LoginResponse(null));
+        // Return success message instead of token
+        return ResponseEntity.ok(new LoginResponse("Login successful"));
     }
 
     @PostMapping("/logout")
