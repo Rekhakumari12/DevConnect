@@ -1,0 +1,96 @@
+<div class="profile-page">
+  <div class="profile-container" *ngIf="!isLoading; else loadingTpl">
+    <h1>My Profile</h1>
+    <p class="subtitle">Update your skills and bio</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Read-only section -->
+      <div class="readonly-section">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            formControlName="username"
+            readonly
+            class="readonly-input"
+          />
+          <small class="field-note">Username cannot be changed</small>
+        </div>
+
+        <div class="form-group email-group">
+          <label for="email">Email</label>
+          <div class="email-input-wrapper">
+            <input
+              id="email"
+              [type]="showEmail ? 'text' : 'password'"
+              formControlName="email"
+              readonly
+              class="readonly-input"
+            />
+            <button
+              type="button"
+              class="toggle-email-btn"
+              (click)="toggleEmailVisibility()"
+              [attr.aria-label]="showEmail ? 'Hide email' : 'Show email'"
+            >
+              {{ showEmail ? '🙈 Hide' : '🐵 Show' }}
+            </button>
+          </div>
+          <small class="field-note">Email is private and only visible to you</small>
+        </div>
+      </div>
+
+      <!-- Editable section -->
+      <div class="editable-section">
+        <div class="form-group">
+          <label for="skills">Skills <span class="required">*</span></label>
+          <input
+            id="skills"
+            type="text"
+            formControlName="skills"
+            placeholder="e.g., Java, Spring Boot, Angular"
+          />
+          <small class="field-hint">Separate skills with commas</small>
+          <app-form-field-errors [control]="f['skills']"></app-form-field-errors>
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Bio</label>
+          <textarea
+            id="bio"
+            formControlName="bio"
+            rows="5"
+            placeholder="Tell others about yourself..."
+            maxlength="500"
+          ></textarea>
+          <small class="field-hint">{{ f['bio'].value?.length || 0 }}/500 characters</small>
+          <app-form-field-errors [control]="f['bio']"></app-form-field-errors>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="form-messages">
+        <div *ngIf="successMessage" class="alert alert-success">✓ {{ successMessage }}</div>
+        <div *ngIf="serverError" class="alert alert-error">✗ {{ serverError }}</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="isLoading || form.invalid || !hasChanges()"
+        >
+          {{ isLoading ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="loading-container">
+      <p>Loading your profile...</p>
+    </div>
+  </ng-template>
+</div>
