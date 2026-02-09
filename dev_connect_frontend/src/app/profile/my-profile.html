@@ -84,6 +84,14 @@
         >
           {{ isLoading ? 'Saving...' : 'Save Changes' }}
         </button>
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="onCancel()"
+          [disabled]="isLoading || !hasChanges()"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   </div>

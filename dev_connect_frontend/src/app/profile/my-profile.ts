@@ -96,6 +96,12 @@ export class MyProfileComponent implements OnInit {
         this.isLoading = false;
         if (err.status === 0) {
           this.serverError = 'Unable to connect to server. Please check your connection.';
+        } else if (err.status === 401) {
+          this.serverError = 'Your session has expired. Please log in again.';
+        } else if (err.status === 400) {
+          this.serverError = err.error?.message || 'Invalid profile data. Please check your inputs.';
+        } else if (err.status === 500) {
+          this.serverError = 'Server error. Please try again later.';
         } else {
           this.serverError = err.error?.message || 'Could not update profile. Please try again.';
         }
@@ -118,6 +124,19 @@ export class MyProfileComponent implements OnInit {
       bio: v.bio?.trim() || '',
     });
 
+    const current = normalize(this.form.getRawValue());
+    const initial = normalize(this.initialValue);
+
+    return current.skills !== initial.skills || current.bio !== initial.bio;
+  }
+
+  onCancel(): void {
+    this.form.patchValue(this.initialValue);
+    this.form.markAsPristine();
+    this.serverError = null;
+    this.successMessage = null;
+  }
+}
     return (
       JSON.stringify(normalize(this.form.getRawValue())) !==
       JSON.stringify(normalize(this.initialValue))
