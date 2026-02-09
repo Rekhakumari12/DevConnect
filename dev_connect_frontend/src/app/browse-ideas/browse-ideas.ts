@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService, PublicUserProfile } from '../auth.service';
+import { AuthStateService } from '../auth-state.service';
 
 @Component({
   selector: 'app-browse-ideas',
@@ -17,14 +18,21 @@ export class BrowseIdeasComponent implements OnInit {
   users: PublicUserProfile[] = [];
   isLoading: boolean = false;
   errorMessage: string = '';
+  currentUsername: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
+    private authStateService: AuthStateService,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
+    // Get current username for ownership checks
+    this.authStateService.currentUser$.subscribe((user) => {
+      this.currentUsername = user?.username || null;
+    });
+
     this.route.queryParams.subscribe((params) => {
       this.searchQuery = params['q'] || '';
       this.techStack = params['tech'] || '';
@@ -97,6 +105,30 @@ export class BrowseIdeasComponent implements OnInit {
         console.error('Error loading posts:', err);
         this.errorMessage = 'Failed to load posts';
         this.isLoading = false;
+      },
+    });
+  }
+
+  isPostOwner(post: any): boolean {
+    return this.currentUsername !== null && post.username === this.currentUsername;
+  }
+
+  onEditPost(postId: string): void {
+    this.router.navigate(['/posts', postId, 'edit']);
+  }
+
+  onDeletePost(postId: string, postTitle: string): void {
+    if (!confirm(`Are you sure you want to delete "${postTitle}"?`)) {
+      return;
+    }
+
+    this.authService.deletePost(postId).subscribe({
+      next: () => {
+        this.posts = this.posts.filter((p) => p.id !== postId);
+      },
+      error: (err) => {
+        console.error('Error deleting post:', err);
+        alert('Failed to delete post. Please try again.');
       },
     });
   }

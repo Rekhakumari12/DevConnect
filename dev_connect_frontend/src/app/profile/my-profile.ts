@@ -17,7 +17,7 @@ export class MyProfileComponent implements OnInit {
   serverError: string | null = null;
   successMessage: string | null = null;
   showEmail = false;
-  private initialValue!: true;
+  private initialValue: any = { skills: '', bio: '' };
 
   constructor(
     private readonly fb: FormBuilder,
@@ -99,7 +99,8 @@ export class MyProfileComponent implements OnInit {
         } else if (err.status === 401) {
           this.serverError = 'Your session has expired. Please log in again.';
         } else if (err.status === 400) {
-          this.serverError = err.error?.message || 'Invalid profile data. Please check your inputs.';
+          this.serverError =
+            err.error?.message || 'Invalid profile data. Please check your inputs.';
         } else if (err.status === 500) {
           this.serverError = 'Server error. Please try again later.';
         } else {
@@ -135,11 +136,5 @@ export class MyProfileComponent implements OnInit {
     this.form.markAsPristine();
     this.serverError = null;
     this.successMessage = null;
-  }
-}
-    return (
-      JSON.stringify(normalize(this.form.getRawValue())) !==
-      JSON.stringify(normalize(this.initialValue))
-    );
   }
 }

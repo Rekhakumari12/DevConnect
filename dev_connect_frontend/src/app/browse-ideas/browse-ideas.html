@@ -39,7 +39,19 @@
 
       <div class="posts-list" *ngIf="posts.length > 0">
         <div class="post-card" *ngFor="let post of posts">
-          <h3>{{ post.title }}</h3>
+          <div class="post-header">
+            <h3>{{ post.title }}</h3>
+            <div class="post-actions" *ngIf="isPostOwner(post)">
+              <button class="btn-edit" (click)="onEditPost(post.id)" title="Edit post">✏️</button>
+              <button
+                class="btn-delete"
+                (click)="onDeletePost(post.id, post.title)"
+                title="Delete post"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
           <p>{{ post.content }}</p>
           <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
             <span class="tag" *ngFor="let tag of post.tags">{{ tag }}</span>

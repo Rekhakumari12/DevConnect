@@ -13,6 +13,16 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'posts/new',
+    loadComponent: () => import('./posts/post-editor').then((m) => m.PostEditorComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'posts/:id/edit',
+    loadComponent: () => import('./posts/post-editor').then((m) => m.PostEditorComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'profile',
     loadComponent: () => import('./profile/my-profile').then((m) => m.MyProfileComponent),
     canActivate: [authGuard],

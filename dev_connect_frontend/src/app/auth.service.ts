@@ -52,6 +52,13 @@ export interface PostsResponse {
   number: number;
 }
 
+export interface PostRequest {
+  title: string;
+  content: string;
+  techStack: string[];
+  visibility: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   // Temporary: Use direct backend URL until proxy is fixed
@@ -119,6 +126,36 @@ export class AuthService {
   searchPosts(keyword: string, page: number = 0, size: number = 20): Observable<PostsResponse> {
     return this.http.get<PostsResponse>(`${this.API_BASE}/search`, {
       params: { keyword, page: page.toString(), size: size.toString() },
+    });
+  }
+
+  createPost(request: PostRequest): Observable<Post> {
+    return this.http.post<Post>(`${this.API_BASE}/posts`, request, {
+      withCredentials: true,
+    });
+  }
+
+  getPostById(postId: string): Observable<Post> {
+    return this.http.get<Post>(`${this.API_BASE}/posts/${postId}`, {
+      withCredentials: true,
+    });
+  }
+
+  updatePost(postId: string, request: PostRequest): Observable<Post> {
+    return this.http.put<Post>(`${this.API_BASE}/posts/${postId}`, request, {
+      withCredentials: true,
+    });
+  }
+
+  deletePost(postId: string): Observable<void> {
+    return this.http.delete<void>(`${this.API_BASE}/posts/${postId}`, {
+      withCredentials: true,
+    });
+  }
+
+  getMyPosts(): Observable<Post[]> {
+    return this.http.get<Post[]>(`${this.API_BASE}/posts/my-post`, {
+      withCredentials: true,
     });
   }
 }

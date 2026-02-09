@@ -1,0 +1,79 @@
+<div class="post-editor-page">
+  <div class="editor-container">
+    <h1>{{ isEditMode ? 'Edit Post' : 'Create New Post' }}</h1>
+
+    <div *ngIf="successMessage" class="alert alert-success">✓ {{ successMessage }}</div>
+    <div *ngIf="serverError" class="alert alert-error">✗ {{ serverError }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!isLoading || isEditMode">
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title">Title *</label>
+        <input
+          type="text"
+          id="title"
+          formControlName="title"
+          placeholder="Enter project idea title"
+          [class.error]="f['title'].invalid && f['title'].touched"
+        />
+        <app-form-field-errors [control]="f['title']"></app-form-field-errors>
+        <div class="char-count">{{ f['title'].value?.length || 0 }}/120</div>
+      </div>
+
+      <!-- Content -->
+      <div class="form-group">
+        <label for="content">Description *</label>
+        <textarea
+          id="content"
+          formControlName="content"
+          rows="10"
+          placeholder="Describe your project idea in detail..."
+          [class.error]="f['content'].invalid && f['content'].touched"
+        ></textarea>
+        <app-form-field-errors [control]="f['content']"></app-form-field-errors>
+      </div>
+
+      <!-- Tech Stack -->
+      <div class="form-group">
+        <label for="techStack">Tech Stack *</label>
+        <input
+          type="text"
+          id="techStack"
+          formControlName="techStack"
+          placeholder="e.g., Angular, Java, PostgreSQL (comma-separated)"
+          [class.error]="f['techStack'].invalid && f['techStack'].touched"
+        />
+        <app-form-field-errors [control]="f['techStack']"></app-form-field-errors>
+        <small class="helper-text">Separate multiple technologies with commas</small>
+      </div>
+
+      <!-- Visibility -->
+      <div class="form-group">
+        <label for="visibility">Visibility *</label>
+        <select
+          id="visibility"
+          formControlName="visibility"
+          [class.error]="f['visibility'].invalid && f['visibility'].touched"
+        >
+          <option value="PUBLIC">Public - Visible to everyone</option>
+          <option value="PRIVATE">Private - Only you can see it (draft)</option>
+        </select>
+        <app-form-field-errors [control]="f['visibility']"></app-form-field-errors>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="isLoading || form.invalid">
+          {{ isLoading ? 'Saving...' : isEditMode ? 'Update Post' : 'Create Post' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="onCancel()" [disabled]="isLoading">
+          Cancel
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="isLoading && !isEditMode" class="loading-container">
+      <p>Loading...</p>
+    </div>
+  </div>
+</div>
