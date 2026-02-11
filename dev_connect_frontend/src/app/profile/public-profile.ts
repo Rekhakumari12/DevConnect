@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService, PublicUserProfile, Post } from '../auth.service';
 import { forkJoin } from 'rxjs';
@@ -21,6 +21,7 @@ export class PublicProfileComponent implements OnInit {
 
   constructor(
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly authService: AuthService,
   ) {}
 
@@ -74,5 +75,9 @@ export class PublicProfileComponent implements OnInit {
         this.posts = [];
       },
     });
+  }
+
+  onViewPost(postId: string): void {
+    this.router.navigate(['/posts', postId]);
   }
 }

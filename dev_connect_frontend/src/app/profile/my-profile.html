@@ -67,6 +67,16 @@
           <small class="field-hint">{{ f['bio'].value?.length || 0 }}/500 characters</small>
           <app-form-field-errors [control]="f['bio']"></app-form-field-errors>
         </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="showEmailPublicly" />
+            <span>Show email on public profile</span>
+          </label>
+          <small class="field-hint">
+            When enabled, other users will be able to see your email on your public profile
+          </small>
+        </div>
       </div>
 
       <!-- Messages -->

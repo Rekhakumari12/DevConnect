@@ -30,6 +30,7 @@ export class MyProfileComponent implements OnInit {
       email: [{ value: '', disabled: true }],
       skills: ['', [Validators.required]],
       bio: ['', [Validators.maxLength(500)]],
+      showEmailPublicly: [false],
     });
 
     this.loadProfile();
@@ -47,6 +48,7 @@ export class MyProfileComponent implements OnInit {
           email: profile.email,
           skills: profile.skills.join(', '),
           bio: profile.bio ?? '',
+          showEmailPublicly: profile.showEmailPublicly ?? false,
         });
         this.initialValue = this.form.getRawValue();
         this.form.markAsPristine();
@@ -83,31 +85,38 @@ export class MyProfileComponent implements OnInit {
     this.serverError = null;
     this.successMessage = null;
 
-    this.authService.updateMyProfile({ skills, bio: value.bio || undefined }).subscribe({
-      next: (updated) => {
-        this.isLoading = false;
-        this.successMessage = 'Profile updated successfully!';
-        this.form.patchValue({
-          skills: updated.skills.join(', '),
-          bio: updated.bio ?? '',
-        });
-      },
-      error: (err) => {
-        this.isLoading = false;
-        if (err.status === 0) {
-          this.serverError = 'Unable to connect to server. Please check your connection.';
-        } else if (err.status === 401) {
-          this.serverError = 'Your session has expired. Please log in again.';
-        } else if (err.status === 400) {
-          this.serverError =
-            err.error?.message || 'Invalid profile data. Please check your inputs.';
-        } else if (err.status === 500) {
-          this.serverError = 'Server error. Please try again later.';
-        } else {
-          this.serverError = err.error?.message || 'Could not update profile. Please try again.';
-        }
-      },
-    });
+    this.authService
+      .updateMyProfile({
+        skills,
+        bio: value.bio || undefined,
+        showEmailPublicly: value.showEmailPublicly,
+      })
+      .subscribe({
+        next: (updated) => {
+          this.isLoading = false;
+          this.successMessage = 'Profile updated successfully!';
+          this.form.patchValue({
+            skills: updated.skills.join(', '),
+            bio: updated.bio ?? '',
+            showEmailPublicly: updated.showEmailPublicly,
+          });
+        },
+        error: (err) => {
+          this.isLoading = false;
+          if (err.status === 0) {
+            this.serverError = 'Unable to connect to server. Please check your connection.';
+          } else if (err.status === 401) {
+            this.serverError = 'Your session has expired. Please log in again.';
+          } else if (err.status === 400) {
+            this.serverError =
+              err.error?.message || 'Invalid profile data. Please check your inputs.';
+          } else if (err.status === 500) {
+            this.serverError = 'Server error. Please try again later.';
+          } else {
+            this.serverError = err.error?.message || 'Could not update profile. Please try again.';
+          }
+        },
+      });
   }
 
   toggleEmailVisibility(): void {
@@ -128,7 +137,11 @@ export class MyProfileComponent implements OnInit {
     const current = normalize(this.form.getRawValue());
     const initial = normalize(this.initialValue);
 
-    return current.skills !== initial.skills || current.bio !== initial.bio;
+    return (
+      current.skills !== initial.skills ||
+      current.bio !== initial.bio ||
+      current.showEmailPublicly !== initial.showEmailPublicly
+    );
   }
 
   onCancel(): void {

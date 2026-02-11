@@ -50,12 +50,15 @@ public class UserService {
     public UserProfileResponse updateProfile(UpdateProfileRequest req, UUID userId) {
         User user = getById(userId);
 
-        // Only allow updating skills and bio; ignore username and email
+        // Only allow updating skills, bio, and showEmailPublicly; ignore username and email
         if (req.skills() != null) {
             user.setSkills(req.skills());
         }
         if (req.bio() != null) {
             user.setBio(req.bio());
+        }
+        if (req.showEmailPublicly() != null) {
+            user.setShowEmailPublicly(req.showEmailPublicly());
         }
 
         userRepo.save(user);

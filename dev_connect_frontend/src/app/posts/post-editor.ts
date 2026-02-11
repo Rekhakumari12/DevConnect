@@ -30,9 +30,9 @@ export class PostEditorComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(120)]],
-      content: ['', [Validators.required, Validators.maxLength(5000)]],
+      content: ['', [Validators.required]],
       techStack: ['', [Validators.required]],
-      visibility: ['PUBLIC', [Validators.required]],
+      visibility: ['PRIVATE', [Validators.required]],
     });
 
     // Check if we're in edit mode
@@ -83,6 +83,17 @@ export class PostEditorComponent implements OnInit {
     }
 
     const value = this.form.value;
+
+    // Check if publishing a post (changing to PUBLIC)
+    if (value.visibility === 'PUBLIC' && (!this.isEditMode || this.form.get('visibility')?.dirty)) {
+      const confirmPublish = confirm(
+        'Are you sure you want to publish this post? It will be visible to everyone.',
+      );
+      if (!confirmPublish) {
+        return;
+      }
+    }
+
     const techStack = value.techStack
       .split(',')
       .map((t: string) => t.trim())
@@ -113,11 +124,13 @@ export class PostEditorComponent implements OnInit {
         this.isLoading = false;
         this.successMessage = this.isEditMode
           ? 'Post updated successfully!'
-          : 'Post created successfully!';
+          : value.visibility === 'PUBLIC'
+            ? 'Post published successfully!'
+            : 'Post saved as draft successfully!';
 
-        // Redirect to browse-ideas after a short delay
+        // Redirect to dashboard after a short delay
         setTimeout(() => {
-          this.router.navigate(['/browse-ideas']);
+          this.router.navigate(['/dashboard']);
         }, 1500);
       },
       error: (err) => {
@@ -142,6 +155,6 @@ export class PostEditorComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/browse-ideas']);
+    this.router.navigate(['/dashboard']);
   }
 }

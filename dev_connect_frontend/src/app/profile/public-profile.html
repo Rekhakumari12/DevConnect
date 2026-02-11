@@ -10,6 +10,11 @@
       </div>
 
       <div class="profile-content">
+        <div class="profile-section" *ngIf="profile.email">
+          <h2>Contact</h2>
+          <p class="email-text">{{ profile.email }}</p>
+        </div>
+
         <div class="profile-section">
           <h2>Skills</h2>
           <div *ngIf="profile.skills && profile.skills.length > 0; else noSkills">
@@ -37,9 +42,18 @@
             <p>Loading posts...</p>
           </div>
           <div *ngIf="!isLoadingPosts && posts.length > 0" class="posts-list">
-            <div *ngFor="let post of posts" class="post-card">
+            <div
+              *ngFor="let post of posts"
+              class="post-card"
+              (click)="onViewPost(post.id)"
+              style="cursor: pointer"
+            >
               <h3 class="post-title">{{ post.title }}</h3>
-              <p class="post-content">{{ post.content }}</p>
+              <p class="post-content">
+                {{
+                  post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content
+                }}
+              </p>
               <div class="post-meta">
                 <span class="post-date">{{ post.createdAt | date: 'MMM d, y' }}</span>
                 <div class="post-tags">

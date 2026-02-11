@@ -14,6 +14,8 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String title;
+    
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ElementCollection

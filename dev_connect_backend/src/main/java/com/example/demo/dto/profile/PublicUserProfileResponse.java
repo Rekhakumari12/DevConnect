@@ -8,6 +8,7 @@ import java.util.UUID;
 public record PublicUserProfileResponse(
         UUID id,
         String username,
+        String email,
         List<String> skills,
         String bio
 ) {
@@ -15,6 +16,7 @@ public record PublicUserProfileResponse(
         this(
                 user.getId(),
                 user.getUsername(),
+                user.isShowEmailPublicly() ? user.getEmail() : null,
                 user.getSkills(),
                 user.getBio()
         );

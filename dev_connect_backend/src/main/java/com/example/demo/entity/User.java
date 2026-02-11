@@ -22,6 +22,9 @@ public class User {
     private String username;
     @Column(unique = true)
     private String email;
+    
+    @Column(nullable = false)
+    private boolean showEmailPublicly = false;
 
     public String getPassword() {
         return password;
@@ -69,5 +72,13 @@ public class User {
 
     public void setId(UUID id) {   // Hibernate uses this after insert
         this.id = id;
+    }
+
+    public boolean isShowEmailPublicly() {
+        return showEmailPublicly;
+    }
+
+    public void setShowEmailPublicly(boolean showEmailPublicly) {
+        this.showEmailPublicly = showEmailPublicly;
     }
 }

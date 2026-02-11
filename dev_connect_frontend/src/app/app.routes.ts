@@ -1,12 +1,20 @@
 import { Routes } from '@angular/router';
 import { Register } from './register/register';
 import { Login } from './login/login';
-import { Home } from './home/home';
 import { authGuard } from './auth.guard';
 import { guestGuard } from './guest.guard';
 
 export const routes: Routes = [
-  { path: 'home', component: Home, canActivate: [authGuard] },
+  {
+    path: 'home',
+    loadComponent: () => import('./dashboard/dashboard').then((m) => m.DashboardComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/dashboard').then((m) => m.DashboardComponent),
+    canActivate: [authGuard],
+  },
   {
     path: 'browse-ideas',
     loadComponent: () => import('./browse-ideas/browse-ideas').then((m) => m.BrowseIdeasComponent),
@@ -15,6 +23,11 @@ export const routes: Routes = [
   {
     path: 'posts/new',
     loadComponent: () => import('./posts/post-editor').then((m) => m.PostEditorComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'posts/:id',
+    loadComponent: () => import('./posts/post-detail').then((m) => m.PostDetailComponent),
     canActivate: [authGuard],
   },
   {

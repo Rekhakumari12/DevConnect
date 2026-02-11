@@ -11,5 +11,6 @@ public record UpdateProfileRequest (
     @NotBlank
     String username,
     List<String> skills,
-    String bio
+    String bio,
+    Boolean showEmailPublicly
 ){}

@@ -1,0 +1,47 @@
+<div class="post-detail-container">
+  <div class="post-detail-content" *ngIf="!isLoading && post; else loadingOrError">
+    <div class="post-header">
+      <button class="btn-back" (click)="onBack()">← Back</button>
+      <div class="post-actions" *ngIf="isOwner">
+        <button class="btn-edit" (click)="onEditPost()">Edit</button>
+        <button class="btn-delete" (click)="onDeletePost()">Delete</button>
+      </div>
+    </div>
+
+    <div class="post-content">
+      <div class="post-title-section">
+        <h1>{{ post.title }}</h1>
+        <div class="post-meta-top">
+          <span
+            class="visibility-badge"
+            [class.public]="post.visibility === 'PUBLIC'"
+            [class.private]="post.visibility === 'PRIVATE'"
+          >
+            {{ post.visibility }}
+          </span>
+          <span class="author" *ngIf="post.username">By {{ post.username }}</span>
+          <span class="date">{{ post.createdAt | date: 'MMM d, y, h:mm a' }}</span>
+        </div>
+      </div>
+
+      <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+        <span class="tag" *ngFor="let tag of post.tags">{{ tag }}</span>
+      </div>
+
+      <div class="post-body">
+        <p [innerHTML]="post.content | newlineToParagraph"></p>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingOrError>
+    <div class="loading-container" *ngIf="isLoading">
+      <p>Loading post...</p>
+    </div>
+    <div class="error-container" *ngIf="error">
+      <div class="error-icon">⚠️</div>
+      <p class="error-message">{{ error }}</p>
+      <button class="btn-back" (click)="onBack()">Go Back</button>
+    </div>
+  </ng-template>
+</div>

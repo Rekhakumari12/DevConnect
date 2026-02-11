@@ -109,27 +109,7 @@ export class BrowseIdeasComponent implements OnInit {
     });
   }
 
-  isPostOwner(post: any): boolean {
-    return this.currentUsername !== null && post.username === this.currentUsername;
-  }
-
-  onEditPost(postId: string): void {
-    this.router.navigate(['/posts', postId, 'edit']);
-  }
-
-  onDeletePost(postId: string, postTitle: string): void {
-    if (!confirm(`Are you sure you want to delete "${postTitle}"?`)) {
-      return;
-    }
-
-    this.authService.deletePost(postId).subscribe({
-      next: () => {
-        this.posts = this.posts.filter((p) => p.id !== postId);
-      },
-      error: (err) => {
-        console.error('Error deleting post:', err);
-        alert('Failed to delete post. Please try again.');
-      },
-    });
+  onViewPost(postId: string): void {
+    this.router.navigate(['/posts', postId]);
   }
 }

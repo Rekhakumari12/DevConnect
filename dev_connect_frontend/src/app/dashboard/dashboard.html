@@ -1,0 +1,152 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>My Dashboard</h1>
+  </div>
+
+  <div class="dashboard-content" *ngIf="!isLoading; else loadingTpl">
+    <!-- Profile Summary -->
+    <div class="profile-summary" *ngIf="profile">
+      <div class="profile-card">
+        <div class="avatar">{{ profile.username[0].toUpperCase() }}</div>
+        <div class="profile-info">
+          <h2>{{ profile.username }}</h2>
+          <p class="email">{{ profile.email }}</p>
+          <div class="skills" *ngIf="profile.skills && profile.skills.length > 0">
+            <span class="skill-tag" *ngFor="let skill of profile.skills">{{ skill }}</span>
+          </div>
+          <p class="bio" *ngIf="profile.bio">{{ profile.bio }}</p>
+        </div>
+        <div class="profile-actions">
+          <a routerLink="/profile" class="btn-edit-profile">Edit Profile</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Posts Statistics -->
+    <div class="stats-section">
+      <div class="stat-card">
+        <div class="stat-number">{{ myPosts.length }}</div>
+        <div class="stat-label">Total Posts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ publicPosts.length }}</div>
+        <div class="stat-label">Published</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ privatePosts.length }}</div>
+        <div class="stat-label">Drafts</div>
+      </div>
+    </div>
+
+    <!-- My Posts Section -->
+    <div class="posts-section">
+      <div class="section-header">
+        <h2>My Posts</h2>
+        <a routerLink="/posts/new" class="btn-create-post">+ New Post</a>
+      </div>
+
+      <div *ngIf="isLoadingPosts" class="posts-loading">
+        <p>Loading posts...</p>
+      </div>
+
+      <div *ngIf="!isLoadingPosts && myPosts.length === 0" class="empty-state">
+        <h3>No posts yet</h3>
+        <p>Create your first post to get started!</p>
+        <a routerLink="/posts/new" class="btn-primary">Create Post</a>
+      </div>
+
+      <!-- Published Posts -->
+      <div *ngIf="publicPosts.length > 0" class="posts-group">
+        <h3>Published Posts</h3>
+        <div class="posts-list">
+          <div
+            class="post-card published"
+            *ngFor="let post of publicPosts"
+            (click)="onViewPost(post.id)"
+          >
+            <div class="post-header">
+              <h3>{{ post.title }}</h3>
+              <div class="post-actions">
+                <button class="btn-edit" (click)="onEditPost(post.id, $event)" title="Edit post">
+                  ✏️
+                </button>
+                <button
+                  class="btn-delete"
+                  (click)="onDeletePost(post.id, post.title, $event)"
+                  title="Delete post"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+            <p class="post-excerpt">
+              {{
+                post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content
+              }}
+            </p>
+            <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+              <span class="tag" *ngFor="let tag of post.tags">{{ tag }}</span>
+            </div>
+            <div class="post-meta">
+              <span class="visibility-badge public">PUBLIC</span>
+              <span class="date">{{ post.createdAt | date: 'short' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draft Posts -->
+      <div *ngIf="privatePosts.length > 0" class="posts-group">
+        <h3>Drafts</h3>
+        <div class="posts-list">
+          <div
+            class="post-card draft"
+            *ngFor="let post of privatePosts"
+            (click)="onViewPost(post.id)"
+          >
+            <div class="post-header">
+              <h3>{{ post.title }}</h3>
+              <div class="post-actions">
+                <button
+                  class="btn-publish"
+                  (click)="onPublishPost(post.id, $event)"
+                  title="Publish post"
+                >
+                  📤
+                </button>
+                <button class="btn-edit" (click)="onEditPost(post.id, $event)" title="Edit post">
+                  ✏️
+                </button>
+                <button
+                  class="btn-delete"
+                  (click)="onDeletePost(post.id, post.title, $event)"
+                  title="Delete post"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+            <p class="post-excerpt">
+              {{
+                post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content
+              }}
+            </p>
+            <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+              <span class="tag" *ngFor="let tag of post.tags">{{ tag }}</span>
+            </div>
+            <div class="post-meta">
+              <span class="visibility-badge private">DRAFT</span>
+              <span class="date">{{ post.createdAt | date: 'short' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="loading-container">
+      <p>Loading dashboard...</p>
+    </div>
+  </ng-template>
+</div>

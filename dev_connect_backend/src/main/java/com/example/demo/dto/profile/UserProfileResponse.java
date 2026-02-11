@@ -10,7 +10,8 @@ public record UserProfileResponse(
         String username,
         String email,
         List<String> skills,
-        String bio
+        String bio,
+        boolean showEmailPublicly
 ) {
     public UserProfileResponse(User user) {
         this(
@@ -18,7 +19,8 @@ public record UserProfileResponse(
                 user.getUsername(),
                 user.getEmail(),
                 user.getSkills(),
-                user.getBio()
+                user.getBio(),
+                user.isShowEmailPublicly()
         );
     }
 }

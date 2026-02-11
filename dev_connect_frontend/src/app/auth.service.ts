@@ -21,11 +21,13 @@ export interface UserProfile {
   email: string;
   skills: string[];
   bio?: string;
+  showEmailPublicly: boolean;
 }
 
 export interface PublicUserProfile {
   id: string;
   username: string;
+  email?: string;
   skills: string[];
   bio?: string;
 }
@@ -33,6 +35,7 @@ export interface PublicUserProfile {
 export interface UpdateProfileRequest {
   skills: string[];
   bio?: string;
+  showEmailPublicly?: boolean;
 }
 
 export interface Post {
