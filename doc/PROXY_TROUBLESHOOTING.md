@@ -62,7 +62,7 @@ In `angular.json`, the proxy is referenced in the serve options:
 # 1. Stop any running dev servers (Ctrl+C in all terminals)
 
 # 2. Verify backend is running
-cd /Users/rekhakumari/Documents/DevConnect/dev_connect_backend
+cd /path/to/DevConnect/dev_connect_backend
 docker compose ps
 # Should show postgres_db and spring_app as "Up"
 
@@ -117,10 +117,10 @@ curl: (7) Failed to connect to localhost port 4200: Connection refused
 
 ```bash
 # IMPORTANT: Must be in the frontend directory!
-cd /Users/rekhakumari/Documents/DevConnect/dev_connect_frontend
+cd /path/to/DevConnect/dev_connect_frontend
 
-# Verify you're in the right directory
-pwd  # Should show: /Users/rekhakumari/Documents/DevConnect/dev_connect_frontend
+# Make sure you're in the right directory
+pwd  # Should show: /path/to/DevConnect/dev_connect_frontend
 ls package.json  # Should exist
 
 # Start the dev server

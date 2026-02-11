@@ -123,7 +123,7 @@ The Angular dev server is configured with a proxy that forwards:
 
 ### Backend won't start
 
-- Check PostgreSQL is running: `psql -U rekhakumari -d dev_connect`
+- Check PostgreSQL is running: `psql -U dbuser -d dev_connect`
 - Verify database credentials in `application.properties`
 - Check port 8080 is not in use: `lsof -i :8080`
 

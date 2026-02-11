@@ -58,10 +58,10 @@ ssh -T git@github.com
 **Output:**
 
 ```
-Hi rekhakumari-economist! You've successfully authenticated, but GitHub does not provide shell access.
+Hi work-account! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
-**Issue identified:** SSH key is associated with a different GitHub account (`rekhakumari-economist`) than the target repository account (`Rekhakumari12`).
+**Issue identified:** SSH key is associated with a different GitHub account (`work-account`) than the target repository account (`personal-account`).
 
 ## Solution: Multiple GitHub Accounts Setup
 
@@ -102,36 +102,36 @@ Host github.com
 Generate a new SSH key with a descriptive filename:
 
 ```bash
-ssh-keygen -t ed25519 -C "Rekhakumari12@github.com" -f ~/.ssh/id_ed25519_rekhakumari12 -N ""
+ssh-keygen -t ed25519 -C "your-github-email@example.com" -f ~/.ssh/id_ed25519_personal -N ""
 ```
 
 **Parameters explained:**
 
 - `-t ed25519`: Use Ed25519 algorithm (recommended for GitHub)
 - `-C "email"`: Comment to identify the key
-- `-f ~/.ssh/id_ed25519_rekhakumari12`: Custom filename to distinguish from other keys
+- `-f ~/.ssh/id_ed25519_personal`: Custom filename to distinguish from other keys
 - `-N ""`: No passphrase (optional - you can set one for extra security)
 
 **Output:**
 
 ```
 Generating public/private ed25519 key pair.
-Your identification has been saved in /Users/user/.ssh/id_ed25519_rekhakumari12
-Your public key has been saved in /Users/user/.ssh/id_ed25519_rekhakumari12.pub
+Your identification has been saved in /Users/user/.ssh/id_ed25519_personal
+Your public key has been saved in /Users/user/.ssh/id_ed25519_personal.pub
 The key fingerprint is:
-SHA256:rsg1pwmkmFep3JPLl1WGpFD4JNt4PqmyqbzUUXslXD8 Rekhakumari12@github.com
+SHA256:<key> your-github-email@example.com
 ```
 
 ### Step 3: Display the New Public Key
 
 ```bash
-cat ~/.ssh/id_ed25519_rekhakumari12.pub
+cat ~/.ssh/id_ed25519_personal.pub
 ```
 
 **Copy the entire output** (example):
 
 ```
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLogmlcvPznBa5qAP5/lxn2XUr30TIOr5B0DkdCw1aK Rekhakumari12@github.com
+ssh-ed25519 AAAAC3Nza...rest-of-key... your-github-email@example.com
 ```
 
 ### Step 4: Add SSH Key to GitHub Account
@@ -151,10 +151,10 @@ Add a new host entry to your SSH config:
 ```bash
 cat >> ~/.ssh/config << 'EOF'
 
-Host github-rekhakumari12
+Host github-personal
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519_rekhakumari12
+  IdentityFile ~/.ssh/id_ed25519_personal
   AddKeysToAgent yes
   UseKeychain yes
 EOF
@@ -162,7 +162,7 @@ EOF
 
 **Configuration explained:**
 
-- `Host github-rekhakumari12`: Alias you'll use in git remotes (can be any name)
+- `Host github-personal`: Alias you'll use in git remotes (can be any name)
 - `HostName github.com`: Actual GitHub server
 - `User git`: Always "git" for GitHub
 - `IdentityFile`: Path to the specific SSH key for this account
@@ -177,10 +177,10 @@ Host github.com
   UseKeychain yes
   IdentityFile ~/.ssh/id_ed25519
 
-Host github-rekhakumari12
+Host github-personal
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519_rekhakumari12
+  IdentityFile ~/.ssh/id_ed25519_personal
   AddKeysToAgent yes
   UseKeychain yes
 ```
@@ -191,7 +191,7 @@ Update your repository's remote URL to use the SSH host alias:
 
 ```bash
 cd /path/to/repository
-git remote set-url origin git@github-rekhakumari12:Rekhakumari12/DevConnect.git
+git remote set-url origin git@github-personal:YourUsername/YourRepository.git
 ```
 
 **Format:** `git@<SSH-HOST-ALIAS>:<GitHub-Username>/<Repository>.git`
@@ -205,20 +205,20 @@ git remote -v
 **Expected output:**
 
 ```
-origin  git@github-rekhakumari12:Rekhakumari12/DevConnect.git (fetch)
-origin  git@github-rekhakumari12:Rekhakumari12/DevConnect.git (push)
+origin  git@github-personal:YourUsername/YourRepository.git (fetch)
+origin  git@github-personal:YourUsername/YourRepository.git (push)
 ```
 
 ### Step 7: Test SSH Connection
 
 ```bash
-ssh -T git@github-rekhakumari12
+ssh -T git@github-personal
 ```
 
 **First attempt may show wrong account:**
 
 ```
-Hi rekhakumari-economist! You've successfully authenticated...
+Hi work-account! You've successfully authenticated...
 ```
 
 **Issue:** SSH agent is using the wrong key from cache.
@@ -229,14 +229,14 @@ Clear SSH agent and add the correct key:
 
 ```bash
 ssh-add -D  # Remove all identities
-ssh-add ~/.ssh/id_ed25519_rekhakumari12  # Add specific key
+ssh-add ~/.ssh/id_ed25519_personal  # Add specific key
 ```
 
 **Output:**
 
 ```
 All identities removed.
-Identity added: /Users/user/.ssh/id_ed25519_rekhakumari12 (Rekhakumari12@github.com)
+Identity added: /Users/user/.ssh/id_ed25519_personal (your-github-email@example.com)
 ```
 
 ### Step 9: Verify Correct Account Connection
@@ -244,13 +244,13 @@ Identity added: /Users/user/.ssh/id_ed25519_rekhakumari12 (Rekhakumari12@github.
 Test again:
 
 ```bash
-ssh -T git@github-rekhakumari12
+ssh -T git@github-personal
 ```
 
 **Expected output:**
 
 ```
-Hi Rekhakumari12! You've successfully authenticated, but GitHub does not provide shell access.
+Hi YourGitHubUsername! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
 ✅ **Success!** The correct account is now authenticated.
@@ -271,7 +271,7 @@ Compressing objects: 100% (327/327), done.
 Writing objects: 100% (363/363), 244.06 KiB | 1015.00 KiB/s, done.
 Total 363 (delta 162), reused 0 (delta 0), pack-reused 0 (from 0)
 remote: Resolving deltas: 100% (162/162), completed with 18 local objects.
-To github-rekhakumari12:Rekhakumari12/DevConnect.git
+To github-personal:YourUsername/YourRepository.git
    64b1ac8..ae00c3e  main -> main
 ```
 
@@ -321,8 +321,8 @@ Hi wrong-account! You've successfully authenticated...
 **Resolution:**
 
 1. Clear SSH agent: `ssh-add -D`
-2. Add specific key: `ssh-add ~/.ssh/id_ed25519_rekhakumari12`
-3. Test again: `ssh -T git@github-rekhakumari12`
+2. Add specific key: `ssh-add ~/.ssh/id_ed25519_personal`
+3. Test again: `ssh -T git@github-personal`
 
 ---
 
@@ -340,7 +340,7 @@ git@github.com: Permission denied (publickey).
 
 1. Verify public key is added to GitHub: https://github.com/settings/keys
 2. Check SSH config syntax: `cat ~/.ssh/config`
-3. Test with verbose mode: `ssh -vT git@github-rekhakumari12`
+3. Test with verbose mode: `ssh -vT git@github-personal`
 
 ---
 
@@ -375,13 +375,13 @@ ssh-add -l
 
 ```bash
 ssh-add --apple-use-keychain ~/.ssh/id_ed25519
-ssh-add --apple-use-keychain ~/.ssh/id_ed25519_rekhakumari12
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519_personal
 ```
 
 ### Test specific SSH host
 
 ```bash
-ssh -T git@github-rekhakumari12
+ssh -T git@github-personal
 ```
 
 ### View git remote configuration
@@ -393,7 +393,7 @@ git remote -v
 ### Change git remote URL
 
 ```bash
-git remote set-url origin git@github-rekhakumari12:Username/Repository.git
+git remote set-url origin git@github-personal:Username/Repository.git
 ```
 
 ## Setting Up Additional GitHub Accounts
@@ -441,7 +441,7 @@ If you need to add more GitHub accounts, repeat the process:
 ### Enable SSH Debug Mode
 
 ```bash
-ssh -vvv git@github-rekhakumari12
+ssh -vvv git@github-personal
 ```
 
 This provides detailed output showing:
@@ -453,7 +453,7 @@ This provides detailed output showing:
 ### Check SSH Config Syntax
 
 ```bash
-ssh -G github-rekhakumari12
+ssh -G github-personal
 ```
 
 Shows the effective configuration for a specific host.

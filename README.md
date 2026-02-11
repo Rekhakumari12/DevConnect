@@ -25,7 +25,7 @@ API Style: REST
 Clone the repository.
 
 ```bash
-git clone https://github.com/rekhakumari12/DevConnect.git
+git clone https://github.com/YourUsername/DevConnect.git
 ```
 
 Move into the project directory.
@@ -68,7 +68,7 @@ spring.datasource.password=your_password
 Clone the repository.
 
 ```bash
-git clone https://github.com/rekhakumari12/DevConnect.git
+git clone https://github.com/YourUsername/DevConnect.git
 cd cd dev-connect
 ```
 
@@ -76,12 +76,12 @@ Create .env file in the project root with the required variables:
 
 ```bash
 POSTGRES_DB=dev_connect
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
+POSTGRES_USER=your_db_user
+POSTGRES_PASSWORD=your_secure_password
 SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/dev_connect
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
-JWT_SECRET=someSecretKey
+SPRING_DATASOURCE_USERNAME=your_db_user
+SPRING_DATASOURCE_PASSWORD=your_secure_password
+JWT_SECRET=your_jwt_secret_key_min_256_bits
 ```
 
 Run Docker Compose:
